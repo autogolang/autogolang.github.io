@@ -1,3 +1,9 @@
+var emptyMsg = {};
+emptyMsg["input"] = "Paste JSON here";
+emptyMsg["output"] = "Go will appear here";
+function formattedEmptyMsg(Msg) {
+  return '<span style="color: #777;">' + Msg + "</span>";
+}
 $(function () {
   // Fill in sample JSON if the user wants to see an example
   $("#sample1").click(function () {

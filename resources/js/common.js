@@ -1,14 +1,9 @@
+const tags = ' `json:"';
 $(function () {
-  const emptyInputMsg = "Paste JSON here";
-  const emptyOutputMsg = "Go will appear here";
-  const formattedEmptyInputMsg =
-    '<span style="color: #777;">' + emptyInputMsg + "</span>";
-  const formattedEmptyOutputMsg =
-    '<span style="color: #777;">' + emptyOutputMsg + "</span>";
   function jsonConversion() {
     var input = $("#input").text().trim();
-    if (!input || input == emptyInputMsg) {
-      $("#output").html(formattedEmptyOutputMsg);
+    if (!input || input == emptyMsg["input"]) {
+      $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
       return;
     }
     let output = JsonToGo(
@@ -47,17 +42,17 @@ $(function () {
   $("#input").on("focus", function () {
     var val = $(this).text();
     if (!val) {
-      $(this).html(formattedEmptyInputMsg);
-      $("#output").html(formattedEmptyOutputMsg);
-    } else if (val == emptyInputMsg) $(this).html("");
+      $(this).html(formattedEmptyMsg(emptyMsg["input"]));
+      $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
+    } else if (val == emptyMsg["input"]) $(this).html("");
   });
   // Shows placeholder text
   $("#input")
     .on("blur", function () {
       var val = $(this).text();
       if (!val) {
-        $(this).html(formattedEmptyInputMsg);
-        $("#output").html(formattedEmptyOutputMsg);
+        $(this).html(formattedEmptyMsg(emptyMsg["input"]));
+        $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
       }
     })
     .blur();

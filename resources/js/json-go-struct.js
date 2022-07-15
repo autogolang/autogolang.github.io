@@ -153,7 +153,7 @@ function JsonToGo(
         appender(typename + " ");
         parent = typename;
         parseScope(scope[keys[i]], depth);
-        appender(' `json:"' + keyname);
+        appender(tags + keyname);
         if (allOmitempty || (omitempty && omitempty[keys[i]] === true)) {
           appender(",omitempty");
         }
@@ -173,7 +173,7 @@ function JsonToGo(
         append(typename + " ");
         parent = typename;
         parseScope(scope[keys[i]], depth);
-        append(' `json:"' + keyname);
+        append(tags + keyname);
         if (allOmitempty || (omitempty && omitempty[keys[i]] === true)) {
           append(",omitempty");
         }

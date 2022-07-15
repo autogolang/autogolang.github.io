@@ -1,18 +1,17 @@
+const tags = ' `graphql:"';
+emptyMsg["encoded"] = "Paste full URL here";
+emptyMsg["url"] = "Paste Post Request URL here";
+emptyMsg["schema"] = "Paste GraphQL Schema here";
+
 $(function () {
-  const emptyInputMsg = "Paste JSON here";
-  const emptyOutputMsg = "Go will appear here";
-  const formattedEmptyInputMsg =
-    '<span style="color: #777;">' + emptyInputMsg + "</span>";
-  const formattedEmptyOutputMsg =
-    '<span style="color: #777;">' + emptyOutputMsg + "</span>";
   const $encoded = $("#encoded");
   const $url = $("#url");
   const $schema = $("#schema");
   const $json = $("#input");
   function jsonConversion() {
     var input = $json.text().trim();
-    if (!input || input == emptyInputMsg) {
-      $("#output").html(formattedEmptyOutputMsg);
+    if (!input || input == emptyMsg["input"]) {
+      $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
       return;
     }
     let output = JsonToGo(
@@ -54,20 +53,28 @@ $(function () {
   }
   function goPackage() {}
   // Hides placeholder text
-  $json.on("focus", function () {
+  $encoded.on("focus", onfocus);
+  $url.on("focus", onfocus);
+  $schema.on("focus", onfocus);
+  $json.on("focus", onfocus);
+  function onfocus() {
     var val = $(this).text();
+    var id = $(this).attr("id");
     if (!val) {
-      $(this).html(formattedEmptyInputMsg);
-      $("#output").html(formattedEmptyOutputMsg);
-    } else if (val == emptyInputMsg) $(this).html("");
-  });
+      $(this).html(formattedEmptyMsg(emptyMsg[id]));
+    } else if (val == emptyMsg[id]) {
+      $(this).html("");
+    }
+  }
   // Shows placeholder text
   $json
     .on("blur", function () {
       var val = $(this).text();
       if (!val) {
-        $(this).html(formattedEmptyInputMsg);
-        $("#output").html(formattedEmptyOutputMsg);
+        $(this).html(formattedEmptyMsg(emptyMsg["input"]));
+        $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
+        $schema.html(formattedEmptyMsg(emptyMsg["schema"]));
+        $url.html(formattedEmptyMsg(emptyMsg["url"]));
       }
     })
     .blur();
