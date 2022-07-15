@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+<head>
+	<title>auto-golang: Convert GraphQL schema to go instantly</title>
+	<meta charset="UTF-8">
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('sw.js').then(function (reg) {
+				console.log('Successfully registered service worker', reg);
+			}).catch(function (err) {
+				console.warn('Error whilst registering service worker', err);
+			})
+		}
+	</script>
+	<script src="resources/js/jquery.min.js"></script>
+	<script src="resources/js/highlight.min.js"></script>
+	<script src="resources/js/tools.js"></script>
+	<script src="resources/js/json-go-struct.js"></script>
+	<script src="resources/js/graphql.js"></script>
+	<script src="resources/js/example.js"></script>
+	<script src="resources/js/gofmt.js" async></script>
+	<link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
+	<link rel="stylesheet" href="resources/css/common.css">
+</head>
+
+<body>
+	<header>
+		<div class="intro">
+			<div class="title">
+				<h1>AutoGolang</h1>
+				<h2>Convert GraphQL schema to go struct</h2>
+			</div>
+			<div>
+				<p>
+					This tool instantly converts GraphQL Schema into a Go type definition. Paste a GraphQL Schema
+					structure on the left and
+					the equivalent Go type will be generated to the right, which you can paste into your program. The
+					script has to make some assumptions, so double-check the output!
+				</p>
+				<p>
+					For an example, try converting GraphQL Schema from the <a href="javascript:"
+						id="sample1">SmartyStreets
+						API</a> or the <a href="javascript:" id="sample2">GitHub API</a>.
+				</p>
+				<p>
+					&copy; 2022 <a href="https://github.com/conbanwa">Conbanwa</a>
+					&bull; <a href="https://github.com/autogolang/autogolang.github.io/">View on GitHub</a>
+					&bull; <a href="javascript:" id="dark">Dark mode</a>
+				</p>
+			</div>
+			<div>
+				<img src="resources/images/graphql.png" id="brand">
+			</div>
+		</div>
+	</header>
+	<table>
+		<tr>
+			<th style="width: 45%;">GraphQL Schema</th>
+			<th style="width: 10%; font-size: 22px;">&#8594;</th>
+			<th style="width: 45%;">Go <label><input type="checkbox" id="inline" checked>Inline type definitions</label>
+				<label><input type="checkbox" id="omitempty">omitempty</label> <span class="copy" id="copy-btn">Copy to
+					clipboard</span>
+			</th>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 100%;">
+				<div id="encoded" contenteditable></div>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 50%;">
+				<div id="url" contenteditable></div>
+			</td>
+			<td style="width: 50%;" rowspan="2">
+				<div id="input" contenteditable></div>
+			</td>
+			<td style="width: 50%;" rowspan="2">
+				<div id="output"></div>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 50%;">
+				<div id="schema" contenteditable></div>
+			</td>
+		</tr>
+	</table>
+	<footer>
+		&copy; 2022 Conbanwa
+		<br>
+
+	</footer>
+</body>
+
+</html>

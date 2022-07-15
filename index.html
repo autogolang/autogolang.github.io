@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+<head>
+    <title>auto-golang: Convert GraphQL schema to go instantly</title>
+    <meta charset="UTF-8">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function (reg) {
+                console.log('Successfully registered service worker', reg);
+            }).catch(function (err) {
+                console.warn('Error whilst registering service worker', err);
+            })
+        }
+    </script>
+    <link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
+    <link rel="stylesheet" href="resources/css/common.css">
+    <script src="resources/js/jquery.min.js"></script>
+    <script src="resources/js/common.js"></script>
+</head>
+<h2 align="center">
+    <a href="./graphql.html">GraphQL AutoGolang</a>
+</h2>
+<h2 align="center">
+    <a href="./json.html">Json AutoGolang</a>
+</h2>
+
+<p>
+    This tool instantly converts GraphQL Schema into a Go type definition. Paste a GraphQL Schema
+    structure on the left and
+    the equivalent Go type will be generated to the right, which you can paste into your program. The
+    script has to make some assumptions, so double-check the output!
+</p>
+<p>
+    &copy; 2022 <a href="https://github.com/conbanwa">Conbanwa</a>
+    &bull; <a href="https://github.com/autogolang/autogolang.github.io/">View on GitHub</a>
+    &bull; <a href="javascript:" id="dark">Dark mode</a>
+</p>
+<footer>
+    &copy; 2022 Conbanwa
+    <br>
+
+</footer>
+
+</html>
