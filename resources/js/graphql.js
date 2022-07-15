@@ -38,7 +38,9 @@ $(function () {
             $("#output").html(
               constructJSONErrorHTML(output.error, faultyIndex, input)
             );
-        } catch (e) {}
+        } catch (err) {
+          console.log(err);
+        }
       }
     } else {
       var finalOutput = output.go;
@@ -83,12 +85,14 @@ $(function () {
   $encoded.keyup(function () {
     const splitted = decoder($encoded.text());
     $url.text(splitted[0]);
-    $schema.text(splitted[1]);
-    PostRequest(splitted[0], splitted[1]).then(function (data) {
-      console.log(data);
-      $json.text(stringify(data));
-    });
-    jsonConversion();
+    const query = '{"query": "' + splitted[1] + '"}';
+    $schema.text(query);
+    PostRequest(splitted[0], query)
+      .then(function (data) {
+        console.log(data);
+        $json.text(stringify(data));
+      })
+      .then(jsonConvert);
   });
   // Also do conversion when inlining preference changes
   $("#inline").change(jsonConvert);
