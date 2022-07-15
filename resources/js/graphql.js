@@ -41,12 +41,13 @@ $(function () {
           console.log(err);
         }
       }
-    } else {
-      var finalOutput = output.go;
-      if (typeof gofmt === "function") finalOutput = gofmt(output.go);
-      var coloredOutput = hljs.highlight("go", finalOutput);
-      $("#output").html(coloredOutput.value);
+      return;
     }
+    var finalOutput = output.go;
+    if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
+    var coloredOutput = hljs.highlight("go", finalOutput);
+    $("#output").html(coloredOutput.value);
+    console.log({ finalOutput, coloredOutput });
   }
   function jsonConvert() {
     jsonConversion();
@@ -67,17 +68,20 @@ $(function () {
     }
   }
   // Shows placeholder text
-  $json
-    .on("blur", function () {
-      var val = $(this).text();
-      if (!val) {
-        $(this).html(formattedEmptyMsg(emptyMsg["input"]));
-        $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
-        $schema.html(formattedEmptyMsg(emptyMsg["schema"]));
-        $url.html(formattedEmptyMsg(emptyMsg["url"]));
-      }
-    })
-    .blur();
+  $encoded.on("blur", onblur).blur();
+  $url.on("blur", onblur).blur();
+  $schema.on("blur", onblur).blur();
+  $json.on("blur", onblur).blur();
+  function onblur(func) {
+    var val = $(this).text();
+    var id = $(this).attr("id");
+    console.warn({ id, val });
+    if (!val) {
+      $(this).html(formattedEmptyMsg(emptyMsg[id]));
+      $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
+    }
+    if (typeof func == "function") func();
+  }
   // If tab is pressed, insert a tab instead of focusing on next element
   function preventTab(e) {
     if (e.keyCode == 9) {
@@ -94,7 +98,7 @@ $(function () {
     $url.text(splitted[0]);
     const query = '{"query": "' + splitted[1] + '"}';
     $schema.text(query);
-    PostRequest(splitted[0], query)
+    PostRequest(splitted[0], query.replace(/[\u0000-\u001F]/g, " "))
       .then(function (data) {
         console.log(data);
         $json.text(stringify(data));
