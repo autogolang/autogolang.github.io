@@ -4,6 +4,65 @@ emptyMsg["output"] = "Go will appear here";
 function formattedEmptyMsg(Msg) {
   return '<span style="color: #777;">' + Msg + "</span>";
 }
+// Proper cases a string according to Go conventions
+function toProperCase(str) {
+  // ensure that the SCREAMING_SNAKE_CASE is converted to snake_case
+  if (str.match(/^[_A-Z0-9]+$/)) {
+    str = str.toLowerCase();
+  }
+  // https://github.com/golang/lint/blob/5614ed5bae6fb75893070bdc0996a68765fdd275/lint.go#L771-L810
+  const commonInitialisms = [
+    "ACL",
+    "API",
+    "ASCII",
+    "CPU",
+    "CSS",
+    "DNS",
+    "EOF",
+    "GUID",
+    "HTML",
+    "HTTP",
+    "HTTPS",
+    "ID",
+    "IP",
+    "JSON",
+    "LHS",
+    "QPS",
+    "RAM",
+    "RHS",
+    "RPC",
+    "SLA",
+    "SMTP",
+    "SQL",
+    "SSH",
+    "TCP",
+    "TLS",
+    "TTL",
+    "UDP",
+    "UI",
+    "UID",
+    "UUID",
+    "URI",
+    "URL",
+    "UTF8",
+    "VM",
+    "XML",
+    "XMPP",
+    "XSRF",
+    "XSS",
+  ];
+  return str
+    .replace(/(^|[^a-zA-Z])([a-z]+)/g, function (unused, sep, frag) {
+      if (commonInitialisms.indexOf(frag.toUpperCase()) >= 0)
+        return sep + frag.toUpperCase();
+      else return sep + frag[0].toUpperCase() + frag.substr(1).toLowerCase();
+    })
+    .replace(/([A-Z])([a-z]+)/g, function (unused, sep, frag) {
+      if (commonInitialisms.indexOf(sep + frag.toUpperCase()) >= 0)
+        return (sep + frag).toUpperCase();
+      else return sep + frag;
+    });
+}
 $(function () {
   // Fill in sample JSON if the user wants to see an example
   $("#sample1").click(function () {
@@ -71,7 +130,20 @@ function constructJSONErrorHTML(rawErrorMessage, errorIndex, json) {
 function stringify(json) {
   return JSON.stringify(json, null, "\t");
 }
-
+function selectGo() {
+  // Highlights the output for the user
+  if (document.selection) {
+    var range = document.body.createTextRange();
+    range.moveToElementText(this);
+    range.select();
+  } else if (window.getSelection) {
+    var range = document.createRange();
+    range.selectNode(this);
+    var sel = window.getSelection();
+    sel.removeAllRanges(); // required as of Chrome 60: https://www.chromestatus.com/features/6680566019653632
+    sel.addRange(range);
+  }
+}
 // From the SmartyStreets API
 var sampleJson1 = [
   {

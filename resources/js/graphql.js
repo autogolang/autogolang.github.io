@@ -1,4 +1,5 @@
-const tags = ' `graphql:"';
+const FromGraphQL = true;
+const TAGS = ' `graphql:"';
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
@@ -43,8 +44,8 @@ $(function () {
       }
       return;
     }
-    var finalOutput = output.go;
-    if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
+    var finalOutput = prefix + suffix(output, $url.text());
+    // if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
     var coloredOutput = hljs.highlight("go", finalOutput);
     $("#output").html(coloredOutput.value);
     console.log({ finalOutput, coloredOutput });
@@ -72,16 +73,18 @@ $(function () {
   $url.on("blur", onblur).blur();
   $schema.on("blur", onblur).blur();
   $json.on("blur", onblur).blur();
-  function onblur(func) {
+  function onblur() {
     var val = $(this).text();
     var id = $(this).attr("id");
-    console.warn({ id, val });
+    // console.warn({ id, val });
     if (!val) {
       $(this).html(formattedEmptyMsg(emptyMsg[id]));
       $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
+    } else {
     }
-    if (typeof func == "function") func();
+    jsonConversion();
   }
+  $encoded.on("change", jsonConvert);
   // If tab is pressed, insert a tab instead of focusing on next element
   function preventTab(e) {
     if (e.keyCode == 9) {
@@ -109,18 +112,5 @@ $(function () {
   $("#inline").change(jsonConvert);
   // Also do conversion when omitempty preference changes
   $("#omitempty").change(jsonConvert);
-  // Highlights the output for the user
-  $("#output").click(function () {
-    if (document.selection) {
-      var range = document.body.createTextRange();
-      range.moveToElementText(this);
-      range.select();
-    } else if (window.getSelection) {
-      var range = document.createRange();
-      range.selectNode(this);
-      var sel = window.getSelection();
-      sel.removeAllRanges(); // required as of Chrome 60: https://www.chromestatus.com/features/6680566019653632
-      sel.addRange(range);
-    }
-  });
+  // $("#output").click(selectGo);
 });
