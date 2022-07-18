@@ -3,7 +3,7 @@ const TAGS = ' `graphql:"';
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
-
+emptyMsg["input"] = "JSON will appear here";
 $(function () {
   const $encoded = $("#encoded");
   const $url = $("#url");
@@ -48,12 +48,18 @@ $(function () {
     // if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
     var coloredOutput = hljs.highlight("go", finalOutput);
     $("#output").html(coloredOutput.value);
-    console.log({ finalOutput, coloredOutput });
+    // console.error({ finalOutput, coloredOutput });
+    emptyMsg["output"] = "Waiting input to generate...";
+    window.history.replaceState({}, "", changeURLArg("schema", $schema.text()));
+    window.history.replaceState({}, "", changeURLArg("url", $url.text()));
   }
   function jsonConvert() {
     jsonConversion();
   }
-  function goPackage() {}
+  const $go = $("#output");
+  $url.text(getUrlQuery("url"));
+  $schema.text(getUrlQuery("schema"));
+  post();
   // Hides placeholder text
   $encoded.on("focus", onfocus);
   $url.on("focus", onfocus);
@@ -69,22 +75,36 @@ $(function () {
     }
   }
   // Shows placeholder text
-  $encoded.on("blur", onblur).blur();
-  $url.on("blur", onblur).blur();
-  $schema.on("blur", onblur).blur();
-  $json.on("blur", onblur).blur();
+  $encoded
+    .on("blur", function () {
+      if (onblur()) decoding();
+    })
+    .blur();
+  $url
+    .on("blur", function () {
+      if (onblur()) post();
+    })
+    .blur();
+  $url.keyup(post);
+  $schema.keyup(post);
+  $json
+    .on("blur", function () {
+      if (onblur()) jsonConversion();
+    })
+    .blur();
   function onblur() {
     var val = $(this).text();
     var id = $(this).attr("id");
     // console.warn({ id, val });
     if (!val) {
       $(this).html(formattedEmptyMsg(emptyMsg[id]));
-      $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
-    } else {
+      return false;
+      // $go.html(formattedEmptyMsg(emptyMsg["output"]));
+    } else if (val == emptyMsg[id]) {
+      return false;
     }
-    jsonConversion();
+    return true;
   }
-  $encoded.on("change", jsonConvert);
   // If tab is pressed, insert a tab instead of focusing on next element
   function preventTab(e) {
     if (e.keyCode == 9) {
@@ -96,21 +116,43 @@ $(function () {
   $schema.keydown(preventTab);
   // Automatically do the conversion on paste or change
   $json.keyup(jsonConvert);
-  $encoded.keyup(function () {
-    const splitted = decoder($encoded.text());
-    $url.text(splitted[0]);
-    const query = '{"query": "' + splitted[1] + '"}';
-    $schema.text(query);
-    PostRequest(splitted[0], query.replace(/[\u0000-\u001F]/g, " "))
+  $encoded.on("change", decoding);
+  $encoded.keyup(decoding);
+  // Also do conversion when inlining preference changes
+  $("#inline").change(jsonConvert);
+  // Also do conversion when omitempty preference changes
+  $("#omitempty").change(jsonConvert);
+  $go.click(selectGo);
+  function decoding() {
+    console.error("decoding");
+    var val = $encoded.text();
+    if (val) {
+      const splitted = decoder($encoded.text());
+      const query = '{"query": "' + splitted[1] + '"}';
+      $url.text(splitted[0]);
+      $schema.text(query);
+      post();
+    }
+  }
+  function post() {
+    PostRequest($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, " "))
       .then(function (data) {
         console.log(data);
         $json.text(stringify(data));
       })
       .then(jsonConvert);
-  });
-  // Also do conversion when inlining preference changes
-  $("#inline").change(jsonConvert);
-  // Also do conversion when omitempty preference changes
-  $("#omitempty").change(jsonConvert);
-  // $("#output").click(selectGo);
+  }
+  function getUrlQuery(arg) {
+    var url = location.search; //获取url中"?"符后的字串
+    if (url.indexOf("?") != -1) {
+      var str = url.substr(1);
+      strs = str.split("&");
+      for (var i = 0; i < strs.length; i++) {
+        if (arg == strs[i].split("=")[0]) {
+          return unescape(strs[i].split("=")[1]);
+        }
+      }
+    }
+  }
+  function goPackage() {}
 });

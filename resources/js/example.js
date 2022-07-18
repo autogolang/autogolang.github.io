@@ -1,5 +1,4 @@
 var emptyMsg = {};
-emptyMsg["input"] = "Paste JSON here";
 emptyMsg["output"] = "Go will appear here";
 function formattedEmptyMsg(Msg) {
   return '<span style="color: #777;">' + Msg + "</span>";
@@ -131,18 +130,22 @@ function stringify(json) {
   return JSON.stringify(json, null, "\t");
 }
 function selectGo() {
-  // Highlights the output for the user
-  if (document.selection) {
-    var range = document.body.createTextRange();
-    range.moveToElementText(this);
-    range.select();
-  } else if (window.getSelection) {
-    var range = document.createRange();
-    range.selectNode(this);
-    var sel = window.getSelection();
-    sel.removeAllRanges(); // required as of Chrome 60: https://www.chromestatus.com/features/6680566019653632
-    sel.addRange(range);
-  }
+  const selectedStr = "Go appears here";
+  if (emptyMsg["output"] != selectedStr)
+    if (document.selection) {
+      // Highlights the output for the user
+      var range = document.body.createTextRange();
+      range.moveToElementText(this);
+      range.select();
+      emptyMsg["output"] = selectedStr;
+    } else if (window.getSelection) {
+      var range = document.createRange();
+      range.selectNode(this);
+      var sel = window.getSelection();
+      sel.removeAllRanges(); // required as of Chrome 60: https://www.chromestatus.com/features/6680566019653632
+      sel.addRange(range);
+      emptyMsg["output"] = selectedStr;
+    }
 }
 // From the SmartyStreets API
 var sampleJson1 = [

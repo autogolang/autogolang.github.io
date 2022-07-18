@@ -33,9 +33,12 @@ function JsonToGo(
   append(`type ${typename} `);
   parseScope(scope);
   if (FromGraphQL) {
+    let key0 = Object.keys(scope);
     return {
       go: accumulator,
-      keys: scope.data ? Object.keys(scope.data) : Object.keys(scope),
+      keys: scope[key0]
+        ? formatScopeKeys(Object.keys(scope[key0]))
+        : formatScopeKeys(key0),
     };
   }
   return {
@@ -159,8 +162,15 @@ function JsonToGo(
         appender(typename + " ");
         parent = typename;
         parseScope(scope[keys[i]], depth);
+        if (
+          !FromGraphQL ||
+          !(keyname[0].toUpperCase() + keyname.slice(1) === typename)
+        ) {
+        appender(TAGS + keyname);
         if (allOmitempty || (omitempty && omitempty[keys[i]] === true)) {
           appender(",omitempty");
+        }
+        appender('"` //' + typename);
         }
         appender("\n");
       }
