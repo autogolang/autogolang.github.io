@@ -84,7 +84,8 @@ function PostRequest(url, data) {
     dataType: "json",
   });
 }
-function changeURLArg(url, arg, arg_val) {
+function changeURLArg( arg, arg_val) {
+  const url = location.href;
   var pattern = arg + "=([^&]*)";
   var replaceText = arg + "=" + arg_val;
   if (url.match(pattern)) {
@@ -96,6 +97,18 @@ function changeURLArg(url, arg, arg_val) {
       return url + "&" + replaceText;
     } else {
       return url + "?" + replaceText;
+    }
+  }
+}
+function getUrlQuery(arg) {
+  var url = location.search; //获取url中"?"符后的字串
+  if (url.indexOf("?") != -1) {
+    var str = url.substr(1);
+    strs = str.split("&");
+    for (var i = 0; i < strs.length; i++) {
+      if (arg == strs[i].split("=")[0]) {
+        return unescape(strs[i].split("=")[1]);
+      }
     }
   }
 }

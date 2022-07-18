@@ -4,10 +4,34 @@ emptyMsg["input"] = "Paste JSON here";
 $(function () {
   const $json = $("#input");
   const $go = $("#output");
-  function jsonConvert() {
-    jsonConversion();
-  }
+  // Hides placeholder text
+  $json.on("focus", function () {
+    var val = $(this).text();
+    if (!val) {
+      $(this).html(formattedEmptyMsg(emptyMsg["input"]));
+      $go.html(formattedEmptyMsg(emptyMsg["output"]));
+    } else if (val == emptyMsg["input"]) $(this).html("");
+  });
+  // Shows placeholder text
+  $json
+    .on("blur", function () {
+      var val = $(this).text();
+      if (!val) {
+        $(this).html(formattedEmptyMsg(emptyMsg["input"]));
+        $go.html(formattedEmptyMsg(emptyMsg["output"]));
+      }
+    })
+    .blur();
+  $json.keyup(jsonConvert);
+  // If tab is pressed, insert a tab instead of focusing on next element
+  $json.keydown(preventTab);
+  $go.click(selectGo);
+  // Also do conversion when inlining preference changes
+  $("#inline").change(jsonConvert);
+  // Also do conversion when omitempty preference changes
+  $("#omitempty").change(jsonConvert);
   function jsonConversion() {
+    // Automatically do the conversion on paste or change
     var input = $json.text().trim();
     if (!input || input == emptyMsg["input"]) {
       $go.html(formattedEmptyMsg(emptyMsg["output"]));
@@ -44,36 +68,7 @@ $(function () {
     }
     emptyMsg["output"] = "Waiting input to generate...";
   }
-  // Hides placeholder text
-  $json.on("focus", function () {
-    var val = $(this).text();
-    if (!val) {
-      $(this).html(formattedEmptyMsg(emptyMsg["input"]));
-      $go.html(formattedEmptyMsg(emptyMsg["output"]));
-    } else if (val == emptyMsg["input"]) $(this).html("");
-  });
-  // Shows placeholder text
-  $json
-    .on("blur", function () {
-      var val = $(this).text();
-      if (!val) {
-        $(this).html(formattedEmptyMsg(emptyMsg["input"]));
-        $go.html(formattedEmptyMsg(emptyMsg["output"]));
-      }
-    })
-    .blur();
-  // If tab is pressed, insert a tab instead of focusing on next element
-  $json.keydown(function (e) {
-    if (e.keyCode == 9) {
-      document.execCommand("insertHTML", false, "&#009"); // insert tab
-      e.preventDefault(); // don't go to next element
-    }
-  });
-  // Automatically do the conversion on paste or change
-  $json.keyup(jsonConvert);
-  // Also do conversion when inlining preference changes
-  $("#inline").change(jsonConvert);
-  // Also do conversion when omitempty preference changes
-  $("#omitempty").change(jsonConvert);
-  $go.click(selectGo);
+  function jsonConvert() {
+    jsonConversion();
+  }
 });

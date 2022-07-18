@@ -9,7 +9,56 @@ $(function () {
   const $url = $("#url");
   const $schema = $("#schema");
   const $json = $("#input");
+  const $go = $("#output");
+  $url.text(getUrlQuery("url"));
+  $schema.text(getUrlQuery("schema"));
+  post();
+  // Hides placeholder text
+  $encoded.on("focus", onfocus);
+  $url.on("focus", onfocus);
+  $schema.on("focus", onfocus);
+  $json.on("focus", onfocus);
+  function onfocus() {
+    var val = $(this).text();
+    var id = $(this).attr("id");
+    if (!val) {
+      $(this).html(formattedEmptyMsg(emptyMsg[id]));
+    } else if (val == emptyMsg[id]) {
+      $(this).html("");
+    }
+  }
+  // Shows placeholder text
+  $encoded.on("blur", onblur).blur();
+  $url.on("blur", onblur).blur();
+  $schema.on("blur", onblur).blur();
+  $json.on("blur", onblur).blur();
+  $json.keyup(jsonConvert);
+  $encoded.on("change", decoding);
+  $encoded.keyup(decoding);
+  $url.keyup(post);
+  $schema.keyup(post);
+  function onblur() {
+    var val = $(this).text();
+    var id = $(this).attr("id");
+    // console.warn({ id, val });
+    if (!val) {
+      $(this).html(formattedEmptyMsg(emptyMsg[id]));
+      return false;
+      // $go.html(formattedEmptyMsg(emptyMsg["output"]));
+    } else if (val == emptyMsg[id]) {
+      return false;
+    }
+    return true;
+  }
+  $schema.keydown(preventTab);
+  $json.keydown(preventTab);
+  $go.click(selectGo);
+  // Also do conversion when inlining preference changes
+  $("#inline").change(jsonConvert);
+  // Also do conversion when omitempty preference changes
+  $("#omitempty").change(jsonConvert);
   function jsonConversion() {
+    // Automatically do the conversion on paste or change
     var input = $json.text().trim();
     if (!input || input == emptyMsg["input"]) {
       $("#output").html(formattedEmptyMsg(emptyMsg["output"]));
@@ -50,79 +99,13 @@ $(function () {
     $("#output").html(coloredOutput.value);
     // console.error({ finalOutput, coloredOutput });
     emptyMsg["output"] = "Waiting input to generate...";
+    console.log("output", changeURLArg("url", $url.text()));
     window.history.replaceState({}, "", changeURLArg("schema", $schema.text()));
     window.history.replaceState({}, "", changeURLArg("url", $url.text()));
   }
   function jsonConvert() {
     jsonConversion();
   }
-  const $go = $("#output");
-  $url.text(getUrlQuery("url"));
-  $schema.text(getUrlQuery("schema"));
-  post();
-  // Hides placeholder text
-  $encoded.on("focus", onfocus);
-  $url.on("focus", onfocus);
-  $schema.on("focus", onfocus);
-  $json.on("focus", onfocus);
-  function onfocus() {
-    var val = $(this).text();
-    var id = $(this).attr("id");
-    if (!val) {
-      $(this).html(formattedEmptyMsg(emptyMsg[id]));
-    } else if (val == emptyMsg[id]) {
-      $(this).html("");
-    }
-  }
-  // Shows placeholder text
-  $encoded
-    .on("blur", function () {
-      if (onblur()) decoding();
-    })
-    .blur();
-  $url
-    .on("blur", function () {
-      if (onblur()) post();
-    })
-    .blur();
-  $url.keyup(post);
-  $schema.keyup(post);
-  $json
-    .on("blur", function () {
-      if (onblur()) jsonConversion();
-    })
-    .blur();
-  function onblur() {
-    var val = $(this).text();
-    var id = $(this).attr("id");
-    // console.warn({ id, val });
-    if (!val) {
-      $(this).html(formattedEmptyMsg(emptyMsg[id]));
-      return false;
-      // $go.html(formattedEmptyMsg(emptyMsg["output"]));
-    } else if (val == emptyMsg[id]) {
-      return false;
-    }
-    return true;
-  }
-  // If tab is pressed, insert a tab instead of focusing on next element
-  function preventTab(e) {
-    if (e.keyCode == 9) {
-      document.execCommand("insertHTML", false, "&#009"); // insert tab
-      e.preventDefault(); // don't go to next element
-    }
-  }
-  $json.keydown(preventTab);
-  $schema.keydown(preventTab);
-  // Automatically do the conversion on paste or change
-  $json.keyup(jsonConvert);
-  $encoded.on("change", decoding);
-  $encoded.keyup(decoding);
-  // Also do conversion when inlining preference changes
-  $("#inline").change(jsonConvert);
-  // Also do conversion when omitempty preference changes
-  $("#omitempty").change(jsonConvert);
-  $go.click(selectGo);
   function decoding() {
     console.error("decoding");
     var val = $encoded.text();
@@ -142,17 +125,4 @@ $(function () {
       })
       .then(jsonConvert);
   }
-  function getUrlQuery(arg) {
-    var url = location.search; //获取url中"?"符后的字串
-    if (url.indexOf("?") != -1) {
-      var str = url.substr(1);
-      strs = str.split("&");
-      for (var i = 0; i < strs.length; i++) {
-        if (arg == strs[i].split("=")[0]) {
-          return unescape(strs[i].split("=")[1]);
-        }
-      }
-    }
-  }
-  function goPackage() {}
 });

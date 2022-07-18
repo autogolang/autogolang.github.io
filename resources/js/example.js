@@ -3,6 +3,13 @@ emptyMsg["output"] = "Go will appear here";
 function formattedEmptyMsg(Msg) {
   return '<span style="color: #777;">' + Msg + "</span>";
 }
+// If tab is pressed, insert a tab instead of focusing on next element
+function preventTab(e) {
+  if (e.keyCode == 9) {
+    document.execCommand("insertHTML", false, "&#009"); // insert tab
+    e.preventDefault(); // don't go to next element
+  }
+}
 // Proper cases a string according to Go conventions
 function toProperCase(str) {
   // ensure that the SCREAMING_SNAKE_CASE is converted to snake_case
