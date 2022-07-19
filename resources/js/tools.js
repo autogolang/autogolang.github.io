@@ -1,71 +1,92 @@
 function addTag(str) {
   let tag =
     TAGS +
-    ancestor +
+    ancestors +
     '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end,amm_in:$pools})"`';
   return str + tag;
 }
 function suffix(go, url) {
-  const ancestor = toProperCase(go.keys[0]);
+  const ancestors = toProperCase(go.keys[0]);
+  const ancestor = singularize(ancestors);
   return (
     go.go +
     `
-func List` +
-    ancestor +
-    `(ctx context.Context, req *Get` +
-    ancestor +
-    `Req) ([]*` +
+    func List` +
+    ancestors +
+    `(ctx context.Context, reqs ...*Get` +
+    ancestors +
+    `Filter) ([]` +
     ancestor +
     `, error) {
-	client := graphql.NewClient("` +
-    url +
-    `, nil)
-
-	var result Data
-
-	vars := map[string]interface{}{
-		"start": graphql.Int(req.TimeStart.Unix()),
-		"end":   graphql.Int(req.TimeEnd.Unix()),
-		"skip":  graphql.Int(req.Skip),
-		"pools": req.Pools,
-	}
-
-	if err := client.Query(ctx, &result, vars); err != nil {
-		return nil, err
-	}
-
-	// put query res into logs
-	var logs []*` +
-    ancestor +
+      ` +
+    structuredClone +
     `
-	logs = append(logs, result.` +
-    ancestor +
-    `...)
-	// if there are more logs, query again
-	if len(result.` +
-    ancestor +
-    `) == 1000 {
-		req.Skip = req.Skip + 1000
-		moreLogs, err := List` +
-    ancestor +
+      var result data
+      const reqUpperLimit = 1000
+      url` +
+    ancestors +
+    ` := "` +
+    url +
+    `"
+      client := graphql.NewClient(url` +
+    ancestors +
+    `, nil)
+      if len(reqs) == 0 {
+        reqs = append(reqs, &Get` +
+    ancestors +
+    `Filter{})
+      }
+      req := reqs[0]
+      if req.First == 0 {
+        req.First = reqUpperLimit
+      }
+      if req.TimeEnd.IsZero() {
+        req.TimeEnd = time.Now()
+      }
+      vars := map[string]interface{}{
+        "first": graphql.Int(req.First),
+        "skip":  graphql.Int(req.Skip),
+        "start": graphql.Int(req.TimeStart.Unix()),
+        "end":   graphql.Int(req.TimeEnd.Unix()),
+      }
+      if err := client.Query(ctx, &result, vars); err != nil {
+        return nil, err
+      }
+      // if there are result.` +
+    ancestors +
+    ` over reqUpperLimit, query again
+      if len(result.` +
+    ancestors +
+    `) == reqUpperLimit {
+        req.Skip += reqUpperLimit
+        queue, err := List` +
+    ancestors +
     `(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-		logs = append(logs, moreLogs...)
-	}
-
-	return logs, nil
-}
+        if err != nil {
+          return nil, err
+        }
+        result.` +
+    ancestors +
+    ` = append(result.` +
+    ancestors +
+    `, queue...)
+      }
+      return result.` +
+    ancestors +
+    `, nil
+    }
+    
 `
   );
 }
 const prefix = `
 import (
 	"context"
+	"time"
+	"trade2mine/config"
 
+	"github.com/conbanwa/graphql"
 	"github.com/shopspring/decimal"
-	"github.com/shurcooL/graphql"
 )
 `;
 
@@ -84,7 +105,7 @@ function PostRequest(url, data) {
     dataType: "json",
   });
 }
-function changeURLArg( arg, arg_val) {
+function changeURLArg(arg, arg_val) {
   const url = location.href;
   var pattern = arg + "=([^&]*)";
   var replaceText = arg + "=" + arg_val;
@@ -111,4 +132,19 @@ function getUrlQuery(arg) {
       }
     }
   }
+}
+function lintName(name) {
+  if (name === "id") return "ID";
+  name = name.replace(/Id[A_Z]/g, "ID");
+  name = name.replace(/Id$/g, "ID");
+  //implement lint
+  return name[0].toUpperCase() + name.slice(1);
+}
+function singularize(name) {
+  if (name.endsWith("ies")) {
+    return name.slice(0, -3) + "y";
+  } else if (name.endsWith("s")) {
+    return name.slice(0, -1);
+  }
+  return name;
 }

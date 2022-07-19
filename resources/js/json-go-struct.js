@@ -162,15 +162,13 @@ function JsonToGo(
         appender(typename + " ");
         parent = typename;
         parseScope(scope[keys[i]], depth);
-        if (
-          !FromGraphQL ||
-          !(keyname[0].toUpperCase() + keyname.slice(1) === typename)
-        ) {
-        appender(TAGS + keyname);
-        if (allOmitempty || (omitempty && omitempty[keys[i]] === true)) {
-          appender(",omitempty");
-        }
-        appender('"` //' + typename);
+        if (!FromGraphQL || !(lintName(keyname) === typename)) {
+          appender(TAGS + keyname);
+          if (allOmitempty || (omitempty && omitempty[keys[i]] === true)) {
+            appender(",omitempty");
+          }
+          appender('"`');
+          if (FromGraphQL) appender("//" + lintName(keyname));
         }
         appender("\n");
       }
