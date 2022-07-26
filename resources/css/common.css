@@ -181,14 +181,6 @@ table {
   table-layout: fixed;
 }
 
-th {
-  padding: 15px;
-  background: #375eab;
-  text-align: center;
-  color: #fff;
-  font-size: 20px;
-}
-
 th label {
   margin-left: 1em;
   font-size: 14px;
@@ -205,37 +197,50 @@ td {
 #url,
 #input,
 #output {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -o-box-sizing: border-box;
-  box-sizing: border-box;
-
-  white-space: pre;
-  width: 100%;
   display: block;
   padding: 1%;
-  font: 14px/1.5em "Consolas", "Menlo", "Monaco", "Courier New", monospace;
-  outline: none;
-  border: none;
-  resize: vertical;
   overflow: scroll;
-  tab-size: 4;
+}
+
+th {
+  text-align: center;
+  font-size: large;
+  border: gray;
+  border-width: 10px;
+  padding: 15px;
+  background: #375eab;
+  color: #fff;
+  border-radius: 12px;
 }
 #encoded {
   background: #fffdde;
+  height: 40px;
   height: 5vh;
 }
 
 #input,
 #output {
-  height: 500px;
-  height: 65vh;
+  height: 800px;
+  white-space: pre;
+  height: 80vh;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+
+  /* width: 100%; */
+  font: 14px/1.5em "Consolas", "Menlo", "Monaco", "Courier New", monospace;
+  outline: none;
+  border: none;
+  resize: vertical;
+  tab-size: 4;
 }
 
 #schema {
   background: #f6ffe9;
   height: 400px;
   height: 55vh;
+  white-space: pre;
 }
 
 #url {

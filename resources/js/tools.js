@@ -83,7 +83,6 @@ const prefix = `
 import (
 	"context"
 	"time"
-	"trade2mine/config"
 
 	"github.com/conbanwa/graphql"
 	"github.com/shopspring/decimal"

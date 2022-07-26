@@ -31,6 +31,9 @@
 			<div class="title">
 				<h1>AutoGolang</h1>
 				<h2>Convert GraphQL schema to go struct</h2>
+				<p>
+					For Json conversion visit <a href="./json.html">Json AutoGolang</a>
+				</p>
 			</div>
 			<div>
 				<p>
@@ -40,14 +43,6 @@
 					script has to make some assumptions, so double-check the output!
 				</p>
 				<p>
-					For an example, try converting GraphQL Schema from the <a href="javascript:"
-						id="sample1">SmartyStreets
-						API</a> or the <a href="javascript:" id="sample2">GitHub API</a>.
-				</p>
-				<p>
-					For Json conversion visit <a href="./json.html">Json AutoGolang</a>
-				</p>
-				<p>
 					&copy; 2022 <a href="https://github.com/conbanwa">Conbanwa</a>
 					&bull; <a href="https://github.com/autogolang/autogolang.github.io/">View on GitHub</a>
 					&bull; <a href="javascript:" id="dark">Dark mode</a>
@@ -55,10 +50,15 @@
 			</div>
 			<div>
 				<img src="resources/images/graphql.png" id="brand">
+				<p>
+					For an example, try converting GraphQL Schema from the <a href="javascript:"
+						id="sample1">SmartyStreets
+						API</a> or the <a href="javascript:" id="sample2">GitHub API</a>.
+				</p>
 			</div>
 		</div>
 	</header>
-	<table>
+	<!-- <table>
 		<tr>
 			<th style="width: 45%;">GraphQL Schema</th>
 			<th style="width: 10%; font-size: 22px;">&#8594;</th>
@@ -67,7 +67,7 @@
 					clipboard</span>
 			</th>
 		</tr>
-	</table>
+	</table> -->
 	<table>
 		<tr>
 			<td style="width: 100%;">
@@ -77,15 +77,31 @@
 	</table>
 	<table>
 		<tr>
-			<td style="width: 20%;">
+			<th style="width: 10%;">
+				Request URL
+			</th>
+			<th style="width: 20%;">
+				JSON
+			</th>
+			<th style="width: 60%;">
+				GO
+			</th>
+		</tr>
+		<tr>
+			<td style="width: 10%;">
 				<div id="url" contenteditable></div>
 			</td>
-			<td style="width: 20%;" rowspan="2">
+			<td style="width: 20%;" rowspan="3">
 				<div id="input" contenteditable></div>
 			</td>
-			<td style="width: 50%;" rowspan="2">
+			<td style="width: 60%;" rowspan="3">
 				<div id="output"></div>
 			</td>
+		</tr>
+		<tr>
+			<th style="width: 10%;">
+				POST body
+			</th>
 		</tr>
 		<tr>
 			<td style="width: 20%;">
