@@ -9,7 +9,8 @@ function JsonToGo(
   typename,
   flatten = false,
   example = false,
-  allOmitempty = false
+  allOmitempty = false,
+  decimal = false
 ) {
   let data;
   let scope;
@@ -268,8 +269,9 @@ function JsonToGo(
     if (val === null) return "interface{}";
     switch (typeof val) {
       case "string":
-        if (/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(\+\d\d:\d\d|Z)/.test(val))
+        if (/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(\+\d\d:\d\d|Z)$/.test(val))
           return "time.Time";
+        if (decimal&&/^\d+\.?\d*$/.test(val)) return "decimal.Decimal";
         else return "string";
       case "number":
         if (val % 1 === 0) {

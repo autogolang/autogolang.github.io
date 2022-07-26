@@ -5,24 +5,16 @@
 <head>
 	<title>auto-golang: Convert GraphQL schema to go instantly</title>
 	<meta charset="UTF-8">
-	<script>
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js').then(function (reg) {
-				console.log('Successfully registered service worker', reg);
-			}).catch(function (err) {
-				console.warn('Error whilst registering service worker', err);
-			})
-		}
-	</script>
+
 	<script src="resources/js/jquery.min.js"></script>
 	<script src="resources/js/highlight.min.js"></script>
+	<script src="resources/js/example.js"></script>
 	<script src="resources/js/tools.js"></script>
 	<script src="resources/js/json-go-struct.js"></script>
-	<script src="resources/js/example.js"></script>
 	<script src="resources/js/graphql.js"></script>
 	<script src="resources/js/gofmt.js" async></script>
 	<link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
-	<link rel="stylesheet" href="resources/css/common.css">
+	<link rel="stylesheet" href="resources/css/graph.css">
 </head>
 
 <body>
@@ -58,16 +50,6 @@
 			</div>
 		</div>
 	</header>
-	<!-- <table>
-		<tr>
-			<th style="width: 45%;">GraphQL Schema</th>
-			<th style="width: 10%; font-size: 22px;">&#8594;</th>
-			<th style="width: 45%;">Go <label><input type="checkbox" id="inline">Inline type definitions</label>
-				<label><input type="checkbox" id="omitempty">omitempty</label> <span class="copy" id="copy-btn">Copy to
-					clipboard</span>
-			</th>
-		</tr>
-	</table> -->
 	<table>
 		<tr>
 			<td style="width: 100%;">
@@ -85,6 +67,8 @@
 			</th>
 			<th style="width: 60%;">
 				GO
+				<label><input type="checkbox" id="decimal" checked>import decimal</label>
+				<span class="copy" id="copy-btn">Copy to clipboard</span>
 			</th>
 		</tr>
 		<tr>

@@ -53,8 +53,8 @@ $(function () {
   $schema.keydown(preventTab);
   $json.keydown(preventTab);
   $go.click(selectGo);
-  // Also do conversion when inlining preference changes
-  $("#inline").change(jsonConvert);
+  // Also do conversion when decimal preference changes
+  $("#decimal").change(jsonConvert);
   // Also do conversion when omitempty preference changes
   $("#omitempty").change(jsonConvert);
   function jsonConversion() {
@@ -67,9 +67,10 @@ $(function () {
     let output = JsonToGo(
       input,
       "",
-      !$("#inline").is(":checked"),
+      true,
       false,
-      $("#omitempty").is(":checked")
+      $("#omitempty").is(":checked"),
+      $("#decimal").is(":checked")
     );
     if (output.error) {
       $("#output").html('<span class="clr-red">' + output.error + "</span>");
@@ -100,7 +101,11 @@ $(function () {
     // console.error({ finalOutput, coloredOutput });
     emptyMsg["output"] = "Waiting input to generate...";
     console.log("output", changeURLArg("url", $url.text()));
-    window.history.replaceState({}, "", changeURLArg("schema", $schema.text().replace(/\n/g, "%0A")));
+    window.history.replaceState(
+      {},
+      "",
+      changeURLArg("schema", $schema.text().replace(/\n/g, "%0A"))
+    );
     window.history.replaceState({}, "", changeURLArg("url", $url.text()));
   }
   function jsonConvert() {

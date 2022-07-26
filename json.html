@@ -6,15 +6,7 @@
 <head>
 	<title>json-go-struct: Convert JSON to Go instantly</title>
 	<meta charset="UTF-8">
-	<script>
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js').then(function (reg) {
-				console.log('Successfully registered service worker', reg);
-			}).catch(function (err) {
-				console.warn('Error whilst registering service worker', err);
-			})
-		}
-	</script>
+
 	<script src="resources/js/jquery.min.js"></script>
 	<script src="resources/js/highlight.min.js"></script>
 	<script src="resources/js/json-go-struct.js"></script>
@@ -57,9 +49,11 @@
 		<tr>
 			<th style="width: 45%;">JSON</th>
 			<th style="width: 10%; font-size: 22px;">&#8594;</th>
-			<th style="width: 45%;">Go <label><input type="checkbox" id="inline" checked>Inline type definitions</label>
-				<label><input type="checkbox" id="omitempty">omitempty</label> <span class="copy" id="copy-btn">Copy to
-					clipboard</span>
+			<th style="width: 45%;">Go
+				<label><input type="checkbox" id="inline" checked>Inline type definitions</label>
+				<label><input type="checkbox" id="omitempty">omitempty</label>
+				<label><input type="checkbox" id="decimal">import decimal</label>
+				<span class="copy" id="copy-btn">Copy to clipboard</span>
 			</th>
 		</tr>
 	</table>

@@ -30,6 +30,8 @@ $(function () {
   $("#inline").change(jsonConvert);
   // Also do conversion when omitempty preference changes
   $("#omitempty").change(jsonConvert);
+  // Also do conversion when decimal preference changes
+  $("#decimal").change(jsonConvert);
   function jsonConversion() {
     // Automatically do the conversion on paste or change
     var input = $json.text().trim();
@@ -42,7 +44,8 @@ $(function () {
       "",
       !$("#inline").is(":checked"),
       false,
-      $("#omitempty").is(":checked")
+      $("#omitempty").is(":checked"),
+      $("#decimal").is(":checked")
     );
     if (output.error) {
       $go.html('<span class="clr-red">' + output.error + "</span>");
