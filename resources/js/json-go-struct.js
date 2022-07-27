@@ -271,7 +271,7 @@ function JsonToGo(
       case "string":
         if (/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(\+\d\d:\d\d|Z)$/.test(val))
           return "time.Time";
-        if (decimal&&/^\d+\.?\d*$/.test(val)) return "decimal.Decimal";
+        if (decimal&&/^\d+\.\d+$/.test(val)) return "decimal.Decimal";
         else return "string";
       case "number":
         if (val % 1 === 0) {
