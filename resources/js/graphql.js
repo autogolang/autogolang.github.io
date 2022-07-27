@@ -1,5 +1,7 @@
 const FromGraphQL = true;
 const TAGS = ' `graphql:"';
+var emptyMsg = {};
+emptyMsg["output"] = "Go will appear here";
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
