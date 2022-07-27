@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+<head>
+	<title>auto-golang: Convert HTTP Request schema to go instantly</title>
+	<meta charset="UTF-8">
+
+	<script src="resources/js/jquery.min.js"></script>
+	<script src="resources/js/highlight.min.js"></script>
+	<script src="resources/js/example.js"></script>
+	<script src="resources/js/tools.js"></script>
+	<script src="resources/js/json-go-struct.js"></script>
+	<script src="resources/js/httpreq.js"></script>
+	<script src="resources/js/gofmt.js" async></script>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<script>
+		// jsonp的封装
+		function jsonp(params) {
+			// 创建script标签并加入到head中
+			var callbackName = params.jsonp;
+			var head = document.getElementsByTagName('head')[0];
+			// 设置传递给后台的回调参数名
+			params.data['callback'] = callbackName;
+			var data = (params.data);
+			var script = document.createElement('script');
+			// 发送请求
+			script.src = params.url + '?' + data;
+			// 创建jsonp回调函数
+			window[callbackName] = function (res) {
+				head.removeChild(script);
+				clearTimeout(script.timer);
+				window[callbackName] = null;
+				params.success && params.success(res);
+			};
+			head.appendChild(script);
+			// 为了得知此次请求是否成功，设置超时处理
+			if (params.time) {
+				script.timer = setTimeout(function () {
+					window[callbackName] = null;
+					head.removeChild(script);
+					params.error && params.error({
+						message: '超时'
+					});
+				}, 500);
+			}
+		}
+
+		function jsonpCallback(e) {
+			console.log(e)
+		}
+
+		jsonp({
+			url: 'https://qa.pro.apex.exchange/api/v1/ticker',
+			jsonp: 'jsonpCallback',
+			data: 'symbol=ETHUSDT&interval=15m&limit=1',
+			success: function (res) {
+				console.trace('res', res)
+				params.success && params.success();
+			},
+			error: function (error) {
+				console.trace('error', error)
+			}
+		})
+	</script>
+	<link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
+	<link rel="stylesheet" href="resources/css/graph.css">
+</head>
+
+<body>
+	<header>
+		<div class="intro">
+			<div class="title">
+				<h1>AutoGolang</h1>
+				<h2>Convert HTTP Request schema to go struct</h2>
+				<p>
+					For Json conversion visit <a href="./json.html">Json AutoGolang</a>
+				</p>
+			</div>
+			<div>
+				<p>
+					This tool instantly converts HTTP Request Schema into a Go type definition. Paste a HTTP Request
+					Schema
+					structure on the left and
+					the equivalent Go type will be generated to the right, which you can paste into your program. The
+					script has to make some assumptions, so double-check the output!
+				</p>
+				<p>
+					&copy; 2022 <a href="https://github.com/conbanwa">Conbanwa</a>
+					&bull; <a href="https://github.com/autogolang/autogolang.github.io/">View on GitHub</a>
+					&bull; <a href="javascript:" id="dark">Dark mode</a>
+				</p>
+			</div>
+			<div>
+				<!-- <img src="resources/images/httpreq.png" id="brand"> -->
+				<p>
+					For an example, try converting HTTP Request Schema from the
+					<a href="javascript:" id="sample1">SmartyStreets API</a> or the
+					<a href="javascript:" id="sample2">GitHub API</a>.
+				</p>
+			</div>
+		</div>
+	</header>
+	<table>
+		<tr>
+			<td style="width: 100%;">
+				<div id="encoded" contenteditable></div>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<th style="width: 10%;">
+				Request URL
+			</th>
+			<th style="width: 20%;">
+				JSON
+			</th>
+			<th style="width: 60%;">
+				GO
+				<label><input type="checkbox" id="decimal" checked>float string to decimal</label>
+				<span class="copy" id="copy-btn">Copy to clipboard</span>
+			</th>
+		</tr>
+		<tr>
+			<td style="width: 10%;">
+				<div id="url" contenteditable></div>
+			</td>
+			<td style="width: 20%;" rowspan="3">
+				<div id="input" contenteditable></div>
+			</td>
+			<td style="width: 60%;" rowspan="3">
+				<div id="output"></div>
+			</td>
+		</tr>
+		<tr>
+			<th style="width: 10%;">
+				POST body
+			</th>
+		</tr>
+		<tr>
+			<td style="width: 20%;">
+				<div id="schema" contenteditable></div>
+			</td>
+		</tr>
+	</table>
+	<footer>
+		&copy; 2022 Conbanwa
+		<br>
+
+	</footer>
+</body>
+
+</html>
