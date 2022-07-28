@@ -6,7 +6,7 @@ function addTag(str) {
   return str + tag;
 }
 function suffix(go, url) {
-  const ancestors = toProperCase(go.keys[0]);
+  const ancestors = toProperCase(go.keys?.[0]||"resp");
   const ancestor = singularize(ancestors);
   return (
     go.go +
@@ -94,6 +94,16 @@ function decoder(encoded) {
   var splitted = encoded.split(splitter);
   var query = decodeURIComponent(splitted[1]).replace("?query=", " ");
   return [splitted[0], query];
+}
+function GetRequest(url, data) {
+  return $.ajax({
+    type: "GET",
+    url: url,
+    data: data,
+    contentType: "application/json",
+    dataType: "json",
+    origin: "*",
+  });
 }
 function PostRequest(url, data) {
   return $.ajax({

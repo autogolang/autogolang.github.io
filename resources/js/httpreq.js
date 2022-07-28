@@ -1,4 +1,5 @@
-const FromGraphQL = true;
+const FromGraphQL = false;
+const FromHttp = true;
 const TAGS = ' `graphql:"';
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
@@ -66,7 +67,7 @@ $(function () {
     }
     let output = JsonToGo(
       input,
-      "",
+      "RespBody",
       true,
       false,
       $("#omitempty").is(":checked"),
@@ -122,10 +123,10 @@ $(function () {
     }
   }
   function post() {
-    // console.log($url.text());
-    // fetch($url.text()).then(function (response) {
-    //   console.log(response.text());
-    // });
-    // .then(jsonConvert);
+    fetch($url.text())
+      .then((response) => response.json())
+      .then((data) => $("#input").text(stringify(data)))
+      .then(jsonConvert)
+      .catch((error) => console.error(error));
   }
 });

@@ -1,0 +1,49 @@
+<script>
+    // jsonp的封装
+    function jsonp(params) {
+        // 创建script标签并加入到head中
+        var callbackName = params.jsonp;
+        var head = document.getElementsByTagName('head')[0];
+        // 设置传递给后台的回调参数名
+        params.data['callback'] = callbackName;
+        var data = (params.data);
+        var script = document.createElement('script');
+        // 发送请求
+        script.src = params.url + '?' + data;
+        // 创建jsonp回调函数
+        window[callbackName] = function (res) {
+            head.removeChild(script);
+            clearTimeout(script.timer);
+            window[callbackName] = null;
+            params.success && params.success(res);
+        };
+        head.appendChild(script);
+        // 为了得知此次请求是否成功，设置超时处理
+        if (params.time) {
+            script.timer = setTimeout(function () {
+                window[callbackName] = null;
+                head.removeChild(script);
+                params.error && params.error({
+                    message: '超时'
+                });
+            }, 500);
+        }
+    }
+
+    function jsonpCallback(e) {
+        console.log(e)
+    }
+
+    jsonp({
+        url: 'http://127.0.0.1:8080/req',
+        jsonp: 'jsonpCallback',
+        data: 'symbol=ETHUSDT&interval=15m&limit=1',
+        success: function (res) {
+            console.trace('res', res)
+            params.success && params.success();
+        },
+        error: function (error) {
+            console.trace('error', error)
+        }
+    })
+</script>

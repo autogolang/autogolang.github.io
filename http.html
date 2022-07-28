@@ -14,55 +14,6 @@
 	<script src="resources/js/httpreq.js"></script>
 	<script src="resources/js/gofmt.js" async></script>
 	<link rel="shortcut icon" href="/favicon.ico" />
-	<script>
-		// jsonp的封装
-		function jsonp(params) {
-			// 创建script标签并加入到head中
-			var callbackName = params.jsonp;
-			var head = document.getElementsByTagName('head')[0];
-			// 设置传递给后台的回调参数名
-			params.data['callback'] = callbackName;
-			var data = (params.data);
-			var script = document.createElement('script');
-			// 发送请求
-			script.src = params.url + '?' + data;
-			// 创建jsonp回调函数
-			window[callbackName] = function (res) {
-				head.removeChild(script);
-				clearTimeout(script.timer);
-				window[callbackName] = null;
-				params.success && params.success(res);
-			};
-			head.appendChild(script);
-			// 为了得知此次请求是否成功，设置超时处理
-			if (params.time) {
-				script.timer = setTimeout(function () {
-					window[callbackName] = null;
-					head.removeChild(script);
-					params.error && params.error({
-						message: '超时'
-					});
-				}, 500);
-			}
-		}
-
-		function jsonpCallback(e) {
-			console.log(e)
-		}
-
-		jsonp({
-			url: 'https://qa.pro.apex.exchange/api/v1/ticker',
-			jsonp: 'jsonpCallback',
-			data: 'symbol=ETHUSDT&interval=15m&limit=1',
-			success: function (res) {
-				console.trace('res', res)
-				params.success && params.success();
-			},
-			error: function (error) {
-				console.trace('error', error)
-			}
-		})
-	</script>
 	<link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
 	<link rel="stylesheet" href="resources/css/graph.css">
 </head>
@@ -92,7 +43,7 @@
 				</p>
 			</div>
 			<div>
-				<!-- <img src="resources/images/httpreq.png" id="brand"> -->
+				<img src="resources/images/json-go-struct.png" id="brand">
 				<p>
 					For an example, try converting HTTP Request Schema from the
 					<a href="javascript:" id="sample1">SmartyStreets API</a> or the
@@ -117,7 +68,8 @@
 				JSON
 			</th>
 			<th style="width: 60%;">
-				GO
+				GO <label><input type="checkbox" id="inline" checked>Inline type definitions</label>
+				<label><input type="checkbox" id="omitempty">omitempty</label>
 				<label><input type="checkbox" id="decimal" checked>float string to decimal</label>
 				<span class="copy" id="copy-btn">Copy to clipboard</span>
 			</th>
