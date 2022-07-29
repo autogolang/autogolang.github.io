@@ -7,7 +7,10 @@
   padding: 1%;
   overflow: scroll;
 }
-
+#send{
+  height: 30px;
+  width: 100px;
+}
 th {
   text-align: center;
   font-size: large;
@@ -15,8 +18,6 @@ th {
   border-width: 10px;
   padding: 15px;
   background: #375eab;
-  color: #fff;
-  border-radius: 12px;
 }
 #encoded {
   background: #fffdde;
@@ -44,15 +45,14 @@ th {
 
 #schema {
   background: #f6ffe9;
-  height: 400px;
-  height: 63.5vh;
+  height: 40px;
+  height: 4vh;
   white-space: pre;
 }
 
 #url {
   background: #fce9ff;
-  height: 100px;
-  height: 10vh;
+  height:4vh
 }
 
 #input {

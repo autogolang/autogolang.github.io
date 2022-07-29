@@ -12,7 +12,7 @@ $(function () {
   const $go = $("#output");
   $url.text(getUrlQuery("url"));
   $schema.text(getUrlQuery("schema"));
-  post();
+  req();
   // Hides placeholder text
   $encoded.on("focus", onfocus);
   $url.on("focus", onfocus);
@@ -35,8 +35,8 @@ $(function () {
   $json.keyup(jsonConvert);
   $encoded.on("change", decoding);
   $encoded.keyup(decoding);
-  $url.keyup(post);
-  $schema.keyup(post);
+  $url.keyup(req);
+  $schema.keyup(req);
   function onblur() {
     var val = $(this).text();
     var id = $(this).attr("id");
@@ -119,10 +119,10 @@ $(function () {
       const query = '{"query": "' + splitted[1] + '"}';
       $url.text(splitted[0]);
       $schema.text(query);
-      post();
+      req();
     }
   }
-  function post() {
+  function req() {
     PostRequest($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, " "))
       .then(function (data) {
         console.log(data);
