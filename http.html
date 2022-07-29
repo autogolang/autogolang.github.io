@@ -13,9 +13,9 @@
 	<script src="resources/js/json-go-struct.js"></script>
 	<script src="resources/js/httpreq.js"></script>
 	<script src="resources/js/gofmt.js" async></script>
-	<link rel="shortcut icon" href="/favicon.ico" />
 	<link rel="stylesheet" href="resources/css/tomorrow.highlight.css">
-	<link rel="stylesheet" href="resources/css/graph.css">
+	<link rel="stylesheet" href="resources/css/http.css">
+	<link rel="stylesheet" href="resources/css/table.css">
 </head>
 
 <body>
@@ -54,16 +54,33 @@
 	</header>
 	<table>
 		<tr>
-			<td style="width: 100%;">
-				<div id="encoded" contenteditable></div>
+			<th style="width: 9%;">
+				Request URL
+				<select id="method">
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+					<option value="DELETE">DELETE</option>
+				</select>
+			</th>
+			<td style="width: 80%;">
+				<div id="url" contenteditable></div>
+			</td>
+			<th>
+				<button id="send">Send</button>
+			</th>
+		</tr>
+		<tr>
+			<th style="width: 9%;">
+				POST body
+			</th>
+			<td style="width: 90%;" colspan="2">
+				<div id="schema" contenteditable></div>
 			</td>
 		</tr>
 	</table>
 	<table>
 		<tr>
-			<th style="width: 10%;">
-				Request URL
-			</th>
 			<th style="width: 20%;">
 				JSON
 			</th>
@@ -75,24 +92,11 @@
 			</th>
 		</tr>
 		<tr>
-			<td style="width: 10%;">
-				<div id="url" contenteditable></div>
-			</td>
-			<td style="width: 20%;" rowspan="3">
+			<td style="width: 20%;">
 				<div id="input" contenteditable></div>
 			</td>
-			<td style="width: 60%;" rowspan="3">
+			<td style="width: 60%;">
 				<div id="output"></div>
-			</td>
-		</tr>
-		<tr>
-			<th style="width: 10%;">
-				POST body
-			</th>
-		</tr>
-		<tr>
-			<td style="width: 20%;">
-				<div id="schema" contenteditable></div>
 			</td>
 		</tr>
 	</table>

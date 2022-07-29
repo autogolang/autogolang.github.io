@@ -11,9 +11,10 @@ $(function () {
   const $schema = $("#schema");
   const $json = $("#input");
   const $go = $("#output");
+  const $method = $("#method");
   $url.text(getUrlQuery("url"));
   $schema.text(getUrlQuery("schema"));
-  post();
+  req();
   // Hides placeholder text
   $encoded.on("focus", onfocus);
   $url.on("focus", onfocus);
@@ -36,8 +37,8 @@ $(function () {
   $json.keyup(jsonConvert);
   $encoded.on("change", decoding);
   $encoded.keyup(decoding);
-  $url.keyup(post);
-  $schema.keyup(post);
+  $url.keyup(req);
+  $schema.keyup(req);
   function onblur() {
     var val = $(this).text();
     var id = $(this).attr("id");
@@ -119,13 +120,47 @@ $(function () {
       const query = '{"query": "' + splitted[1] + '"}';
       $url.text(splitted[0]);
       $schema.text(query);
-      post();
+      req();
     }
   }
-  function post() {
-    fetch($url.text())
+  function req() {
+    console.log("req", $method.val());
+    opt = {
+      method: $method.val(),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        // "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Allow-Headers":
+        //   "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, Origin, Cache-Control, X-Requested-With",
+        // "Access-Control-Allow-Methods": "*",
+        // "Access-Control-Allow-Credentials": "true",
+      },
+      body: $method.val() == "GET" ? undefined : $schema.text(),
+    };
+    fetch($url.text(), opt)
       .then((response) => response.json())
-      .then((data) => $("#input").text(stringify(data)))
+      .then((data) => $json.text(stringify(data)))
+      .then(jsonConvert)
+      .catch((error) => {
+        console.error(error);
+        forward(opt);
+      });
+  }
+  function forward(opt) {
+    console.log("forward", opt.method);
+    fetch("https://api.apex.exchange/v1/data/req", {
+      method: "POST",
+      headers: opt.headers,
+      body:
+        "method=" +
+        opt.method +
+        "&url=" +
+        encodeURIComponent($url.text()) +
+        "&body=" +
+        opt.body,
+    })
+      .then((response) => response.json())
+      .then((data) => $json.text(stringify(data)))
       .then(jsonConvert)
       .catch((error) => console.error(error));
   }
