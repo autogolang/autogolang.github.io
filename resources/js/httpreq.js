@@ -5,6 +5,7 @@ emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
 emptyMsg["input"] = "JSON will appear here";
+var cache = {};
 $(function () {
   const $encoded = $("#encoded");
   const $url = $("#url");
@@ -102,7 +103,7 @@ $(function () {
     $("#output").html(coloredOutput.value);
     // console.error({ finalOutput, coloredOutput });
     emptyMsg["output"] = "Waiting input to generate...";
-    console.log("output", changeURLArg("url", $url.text()));
+    changeURLArg("url", $url.text());
     window.history.replaceState(
       {},
       "",
@@ -124,7 +125,6 @@ $(function () {
     }
   }
   function req() {
-    console.log("req", $method.val());
     opt = {
       method: $method.val(),
       headers: {
@@ -136,19 +136,27 @@ $(function () {
         // "Access-Control-Allow-Credentials": "true",
       },
       body: $method.val() == "GET" ? undefined : $schema.text(),
+      url: $url.text(),
     };
+    if (cache[stringify(opt)]) {
+      console.log(cache, cache[stringify(opt)]);
+      $json.text(cache[opt]);
+      return;
+    }
     fetch($url.text(), opt)
       .then((response) => response.json())
-      .then((data) => $json.text(stringify(data)))
-      .then(jsonConvert)
-      .catch((error) => {
-        console.error(error);
-        forward(opt);
-      });
+      .then((data) => {
+        $json.text(stringify(data));
+        cache[stringify(opt)] = stringify(data);
+        jsonConversion();
+      })
+      .catch(() => forward(opt));
   }
   function forward(opt) {
-    console.log("forward", opt.method);
-    fetch("https://api.apex.exchange/v1/data/req", {
+    // const forwardUrl = "http://127.0.0.1:8080/data/req";
+    const forwardUrl = "https://api.apex.exchange/v1/data/req";
+    if ($url.text().startsWith(forwardUrl)) return;
+    fetch(forwardUrl, {
       method: "POST",
       headers: opt.headers,
       body:
@@ -160,8 +168,11 @@ $(function () {
         opt.body,
     })
       .then((response) => response.json())
-      .then((data) => $json.text(stringify(data)))
-      .then(jsonConvert)
+      .then((data) => {
+        $json.text(stringify(data));
+        jsonConversion();
+        cache[stringify(opt)] = stringify(data);
+      })
       .catch((error) => console.error(error));
   }
 });
