@@ -82,13 +82,16 @@
 	<table>
 		<tr>
 			<th style="width: 20%;">
-				JSON
+				JSON <br>
+				<label>Go type name: </label>
+				<input type="text" id="struct" value="RespBody" placeholder="RespBody">
 			</th>
 			<th style="width: 60%;">
-				GO <label><input type="checkbox" id="inline" checked>Inline type definitions</label>
+				GO <span class="copy" id="copy-btn">Copy to clipboard</span>
+				<br>
+				<label><input type="checkbox" id="inline">Inline type definitions</label>
 				<label><input type="checkbox" id="omitempty">omitempty</label>
 				<label><input type="checkbox" id="decimal" checked>float string to decimal</label>
-				<span class="copy" id="copy-btn">Copy to clipboard</span>
 			</th>
 		</tr>
 		<tr>

@@ -1,5 +1,3 @@
-const FromGraphQL = true;
-const TAGS = ' `graphql:"';
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
@@ -70,7 +68,8 @@ $(function () {
       true,
       false,
       $("#omitempty").is(":checked"),
-      $("#decimal").is(":checked")
+      $("#decimal").is(":checked"),
+      true
     );
     if (output.error) {
       $("#output").html('<span class="clr-red">' + output.error + "</span>");
@@ -112,7 +111,6 @@ $(function () {
     jsonConversion();
   }
   function decoding() {
-    console.error("decoding");
     var val = $encoded.text();
     if (val) {
       const splitted = decoder($encoded.text());
@@ -123,6 +121,9 @@ $(function () {
     }
   }
   function req() {
+    let diff = new Date().getTime() - lastReq;
+    if (diff < 1000) return;
+    lastReq = new Date().getTime();
     PostRequest($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, " "))
       .then(function (data) {
         console.log(data);

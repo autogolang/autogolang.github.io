@@ -1,5 +1,3 @@
-const FromGraphQL = false;
-const TAGS = ' `json:"';
 emptyMsg["input"] = "Paste JSON here";
 $(function () {
   const $json = $("#input");
@@ -41,7 +39,7 @@ $(function () {
     }
     let output = JsonToGo(
       input,
-      "",
+      $("#struct").val(),
       !$("#inline").is(":checked"),
       false,
       $("#omitempty").is(":checked"),

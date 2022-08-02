@@ -1,4 +1,12 @@
 var emptyMsg = {};
+var cache = {};
+var lastReq = 0;
+const z = console.log;
+const t = console.trace;
+function p(params) {
+  t(params);
+  return params;
+}
 emptyMsg["output"] = "Go will appear here";
 function formattedEmptyMsg(Msg) {
   return '<span style="color: #777;">' + Msg + "</span>";

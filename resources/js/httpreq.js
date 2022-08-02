@@ -1,11 +1,7 @@
-const FromGraphQL = false;
-const FromHttp = true;
-const TAGS = ' `graphql:"';
 emptyMsg["encoded"] = "Paste full URL here";
 emptyMsg["url"] = "Paste Post Request URL here";
 emptyMsg["schema"] = "Paste GraphQL Schema here";
 emptyMsg["input"] = "JSON will appear here";
-var cache = {};
 $(function () {
   const $encoded = $("#encoded");
   const $url = $("#url");
@@ -58,6 +54,8 @@ $(function () {
   $go.click(selectGo);
   // Also do conversion when decimal preference changes
   $("#decimal").change(jsonConvert);
+  // Also do conversion when inlining preference changes
+  $("#inline").change(jsonConvert);
   // Also do conversion when omitempty preference changes
   $("#omitempty").change(jsonConvert);
   function jsonConversion() {
@@ -70,7 +68,7 @@ $(function () {
     let output = JsonToGo(
       input,
       "RespBody",
-      true,
+      !$("#inline").is(":checked"),
       false,
       $("#omitempty").is(":checked"),
       $("#decimal").is(":checked")
@@ -107,9 +105,16 @@ $(function () {
     window.history.replaceState(
       {},
       "",
-      changeURLArg("schema", $schema.text().replace(/\n/g, "%0A"))
+      changeURLArg(
+        "schema",
+        encodeURIComponent($schema.text().replace(/\n/g, "%0A"))
+      )
     );
-    window.history.replaceState({}, "", changeURLArg("url", $url.text()));
+    window.history.replaceState(
+      {},
+      "",
+      changeURLArg("url", encodeURIComponent($url.text()))
+    );
   }
   function jsonConvert() {
     jsonConversion();
@@ -125,6 +130,9 @@ $(function () {
     }
   }
   function req() {
+    let diff = new Date().getTime() - lastReq;
+    if (diff < 1000) return;
+    lastReq = new Date().getTime();
     opt = {
       method: $method.val(),
       headers: {
@@ -139,7 +147,7 @@ $(function () {
       url: $url.text(),
     };
     if (cache[stringify(opt)]) {
-      console.log(cache, cache[stringify(opt)]);
+      // console.log(cache, cache[stringify(opt)]);
       $json.text(cache[opt]);
       return;
     }

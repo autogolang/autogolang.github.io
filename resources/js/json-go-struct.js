@@ -7,10 +7,11 @@
 function JsonToGo(
   json,
   typename,
-  flatten = false,
-  example = false,
-  allOmitempty = false,
-  decimal = false
+  flatten,
+  example,
+  allOmitempty,
+  decimal,
+  FromGraphQL
 ) {
   let data;
   let scope;
@@ -21,6 +22,10 @@ function JsonToGo(
   let accumulator = "";
   let innerTabs = 0;
   let parent = "";
+  var TAGS = ' `json:"';
+  if (FromGraphQL) {
+    TAGS = ' `graphql:"';
+  }
   try {
     data = JSON.parse(json.replace(/:(\s*\d*)\.0/g, ":$1.1")); // hack that forces floats to stay as floats
     scope = data;
@@ -271,7 +276,7 @@ function JsonToGo(
       case "string":
         if (/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(\+\d\d:\d\d|Z)$/.test(val))
           return "time.Time";
-        if (decimal && /^\d+\.\d+$/.test(val)) return "decimal.Decimal";
+        if (decimal && /^-?\d+\.\d+$/.test(val)) return "decimal.Decimal";
         else return "string";
       case "number":
         if (val % 1 === 0) {

@@ -11,7 +11,7 @@ function suffix(go, url) {
   return (
     go.go +
     `
-    func List` +
+func List` +
     ancestors +
     `(ctx context.Context, reqs ...*Get` +
     ancestors +
@@ -21,7 +21,7 @@ function suffix(go, url) {
       ` +
     structuredClone +
     `
-      var result data
+      var result Data
       const reqUpperLimit = 1000
       url` +
     ancestors +
