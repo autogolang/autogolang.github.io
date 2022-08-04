@@ -35,7 +35,7 @@ th {
   box-sizing: border-box;
 
   /* width: 100%; */
-  font: 14px/1.5em "Consolas", "Menlo", "Monaco", "Courier New", monospace;
+  font: 14px/1.5em 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
   outline: none;
   border: none;
   resize: vertical;

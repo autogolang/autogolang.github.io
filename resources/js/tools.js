@@ -2,12 +2,12 @@ function addTag(str) {
   let tag =
     TAGS +
     ancestors +
-    '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end,amm_in:$pools})"`';
-  return str + tag;
+    '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end,amm_in:$pools})"`'
+  return str + tag
 }
 function suffix(go, url) {
-  const ancestors = toProperCase(go.keys?.[0]||"resp");
-  const ancestor = singularize(ancestors);
+  const ancestors = toProperCase(go.keys?.[0] || 'resp')
+  const ancestor = singularize(ancestors)
   return (
     go.go +
     `
@@ -77,7 +77,7 @@ func List` +
     }
     
 `
-  );
+  )
 }
 const prefix = `
 import (
@@ -87,73 +87,73 @@ import (
 	"github.com/conbanwa/graphql"
 	"github.com/shopspring/decimal"
 )
-`;
+`
 
 function decoder(encoded) {
-  const splitter = "/graphql";
-  var splitted = encoded.split(splitter);
-  var query = decodeURIComponent(splitted[1]).replace("?query=", " ");
-  return [splitted[0], query];
+  const splitter = '/graphql'
+  var splitted = encoded.split(splitter)
+  var query = decodeURIComponent(splitted[1]).replace('?query=', ' ')
+  return [splitted[0], query]
 }
 function GetRequest(url, data) {
   return $.ajax({
-    type: "GET",
+    type: 'GET',
     url: url,
     data: data,
-    contentType: "application/json",
-    dataType: "json",
-    origin: "*",
-  });
+    contentType: 'application/json',
+    dataType: 'json',
+    origin: '*',
+  })
 }
 function PostRequest(url, data) {
   return $.ajax({
-    type: "POST",
+    type: 'POST',
     url: url,
     data: data,
-    contentType: "application/json",
-    dataType: "json",
-  });
+    contentType: 'application/json',
+    dataType: 'json',
+  })
 }
 function changeURLArg(arg, arg_val) {
-  const url = location.href;
-  var pattern = arg + "=([^&]*)";
-  var replaceText = arg + "=" + arg_val;
+  const url = location.href
+  var pattern = arg + '=([^&]*)'
+  var replaceText = arg + '=' + arg_val
   if (url.match(pattern)) {
-    var tmp = "/(" + arg + "=)([^&]*)/gi";
-    tmp = url.replace(eval(tmp), replaceText);
-    return tmp;
+    var tmp = '/(' + arg + '=)([^&]*)/gi'
+    tmp = url.replace(eval(tmp), replaceText)
+    return tmp
   } else {
-    if (url.match("[?]")) {
-      return url + "&" + replaceText;
+    if (url.match('[?]')) {
+      return url + '&' + replaceText
     } else {
-      return url + "?" + replaceText;
+      return url + '?' + replaceText
     }
   }
 }
 function getUrlQuery(arg) {
-  var url = location.search; //获取url中"?"符后的字串
-  if (url.indexOf("?") != -1) {
-    var str = url.substr(1);
-    strs = str.split("&");
+  var url = location.search //获取url中"?"符后的字串
+  if (url.indexOf('?') != -1) {
+    var str = url.substr(1)
+    strs = str.split('&')
     for (var i = 0; i < strs.length; i++) {
-      if (arg == strs[i].split("=")[0]) {
-        return unescape(strs[i].split("=")[1]);
+      if (arg == strs[i].split('=')[0]) {
+        return unescape(strs[i].split('=')[1])
       }
     }
   }
 }
 function lintName(name) {
-  if (name === "id") return "ID";
-  name = name.replace(/Id[A_Z]/g, "ID");
-  name = name.replace(/Id$/g, "ID");
+  if (name === 'id') return 'ID'
+  name = name.replace(/Id[A_Z]/g, 'ID')
+  name = name.replace(/Id$/g, 'ID')
   //implement lint
-  return name[0].toUpperCase() + name.slice(1);
+  return name[0].toUpperCase() + name.slice(1)
 }
 function singularize(name) {
-  if (name.endsWith("ies")) {
-    return name.slice(0, -3) + "y";
-  } else if (name.endsWith("s")) {
-    return name.slice(0, -1);
+  if (name.endsWith('ies')) {
+    return name.slice(0, -3) + 'y'
+  } else if (name.endsWith('s')) {
+    return name.slice(0, -1)
   }
-  return name;
+  return name
 }

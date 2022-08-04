@@ -7,7 +7,7 @@
   padding: 1%;
   overflow: scroll;
 }
-#send{
+#send {
   height: 30px;
   width: 100px;
 }
@@ -36,7 +36,7 @@ th {
   box-sizing: border-box;
 
   /* width: 100%; */
-  font: 14px/1.5em "Consolas", "Menlo", "Monaco", "Courier New", monospace;
+  font: 14px/1.5em 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
   outline: none;
   border: none;
   resize: vertical;
@@ -52,7 +52,7 @@ th {
 
 #url {
   background: #fce9ff;
-  height:4vh
+  height: 4vh;
 }
 
 #input {
