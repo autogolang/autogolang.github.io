@@ -2,6 +2,7 @@ emptyMsg['encoded'] = 'Paste full URL here'
 emptyMsg['url'] = 'Paste Post Request URL here'
 emptyMsg['schema'] = 'Paste GraphQL Schema here'
 emptyMsg['input'] = 'JSON will appear here'
+var TAGS = ' `graphql:"'
 $(function () {
   const $encoded = $('#encoded')
   const $url = $('#url')

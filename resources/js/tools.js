@@ -1,15 +1,58 @@
 function addTag(str) {
   let tag =
-    TAGS +
-    ancestors +
-    '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end,amm_in:$pools})"`'
+    TAGS + ancestors + '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end})"`'
   return str + tag
 }
 function suffix(go, url) {
   const ancestors = toProperCase(go.keys?.[0] || 'resp')
   const ancestor = singularize(ancestors)
+  const ancestorsFilter = ancestors + 'Filter'
+  const goStruct =
+    ancestors +
+    ' []' +
+    ancestor +
+    TAGS +
+    ancestors +
+    '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end)"`'
+  const filter = `type GetKlineLogsFilter struct {
+      First        int
+      Skip         int
+      OrderBy      string
+      OrderDescend bool //逆序
+      TimeStart    int
+      TimeEnd      int
+    }`
+  const swaggo =
+    `// @tags    holding
+    // @Summary get bana price
+    // @Produce json
+    // @Param   first query    string false "first"
+    // @Param   skip query    string false "skip"
+    // @Param   time_start query    string false "time_start"
+    // @Param   time_end query    string false "time_end"
+    // @Param   order_by query    string false "order_by"
+    // @Success 200         {object} R
+    // @Success 302 {object} map[string]decimal.Decimal "the structure in data of code 200 above, <br> click "Model" to view field details."
+    // @Router  /bana_balance [get]
+    func ` +
+    ancestors +
+    `(c *gin.Context) {
+      c.JSON(returnRows(graphql.` +
+    ancestors +
+    `(c.Request.Context(), graphql.` +
+    ancestorsFilter +
+    `{
+        First:     ToInt(c.Query("first")),
+        Skip:      ToInt(c.Query("skip")),
+        TimeStart: ToInt(c.Query("time_start")),
+        TimeEnd:   ToInt(c.Query("time_end")),
+        OrderBy:   c.Query("order_by"),
+      })))
+    }
+    `
   return (
-    go.go +
+    go.go.replace(ancestors, ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
+    filter +
     `
 func List` +
     ancestors +
@@ -18,10 +61,11 @@ func List` +
     `Filter) ([]` +
     ancestor +
     `, error) {
-      ` +
-    structuredClone +
+      var result struct {
+        ` +
+    goStruct +
     `
-      var result Data
+      }
       const reqUpperLimit = 1000
       url` +
     ancestors +
@@ -33,21 +77,21 @@ func List` +
     `, nil)
       if len(reqs) == 0 {
         reqs = append(reqs, &Get` +
-    ancestors +
-    `Filter{})
+    ancestorsFilter +
+    `{})
       }
       req := reqs[0]
       if req.First == 0 {
         req.First = reqUpperLimit
       }
-      if req.TimeEnd.IsZero() {
-        req.TimeEnd = time.Now()
+      if req.TimeEnd==0 {
+        req.TimeEnd = int(time.Now().Unix())
       }
       vars := map[string]interface{}{
         "first": graphql.Int(req.First),
         "skip":  graphql.Int(req.Skip),
-        "start": graphql.Int(req.TimeStart.Unix()),
-        "end":   graphql.Int(req.TimeEnd.Unix()),
+        "start": graphql.Int(req.TimeStart),
+        "end":   graphql.Int(req.TimeEnd),
       }
       if err := client.Query(ctx, &result, vars); err != nil {
         return nil, err
@@ -79,7 +123,8 @@ func List` +
 `
   )
 }
-const prefix = `
+const prefix = `package graphql
+
 import (
 	"context"
 	"time"
