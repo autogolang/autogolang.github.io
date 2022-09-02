@@ -1,19 +1,23 @@
-function addTag(str) {
-  let tag =
-    TAGS + ancestors + '(first:1000,orderBy:timestamp,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end})"`'
-  return str + tag
+function camelCaseToUnderscore(params) {
+  return params.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
 }
+function lowerInitial(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1)
+}
+const packageName = 'gql'
 function suffix(go, url) {
-  const ancestors = toProperCase(go.keys?.[0] || 'resp')
-  const ancestor = singularize(ancestors)
-  const ancestorsFilter = ancestors + 'Filter'
+  const ancestors = toProperCase(go.keys?.[0] || 'resp'),
+    ancestor = singularize(ancestors),
+    ancestorsFilter = ancestors + 'Filter',
+    ancestor_under_score = camelCaseToUnderscore(ancestors),
+    ancestorSpace = ancestor_under_score.replace(/_/g, ' ')
   const goStruct =
     ancestors +
     ' []' +
     ancestor +
     TAGS +
     ancestors +
-    '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end)"`'
+    '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end})"`'
   const filter =
     `type ` +
     ancestorsFilter +
@@ -21,27 +25,33 @@ function suffix(go, url) {
       graphql.Filter
     }`
   const swaggo =
-    `
+    `// r.GET("graph/` +
+    ancestor_under_score +
+    `", ctx.Handler(` +
+    packageName +
+    `.` +
+    ancestors +
+    `))
     // @tags    graphql
     // @Summary get ` +
-    ancestors +
+    ancestorSpace +
     `
     // @Produce json
-    // @Param   first query    string false "first"
-    // @Param   skip query    string false "skip"
+    // @Param   first      query    string false "first"
+    // @Param   skip       query    string false "skip"
     // @Param   time_start query    string false "time_start"
-    // @Param   time_end query    string false "time_end"
-    // @Param   order_by query    string false "order_by"
-    // @Success 200         {object} R
-    // @Success 302 {object} []` +
+    // @Param   time_end   query    string false "time_end"
+    // @Param   order_by   query    string false "order_by"
+    // @Success 200        {object} ctx.R
+    // @Success 302        {object} []` +
     ancestor +
     ` "the structure in data of code 200 above, <br> click "Model" to view field details."
-    // @Router  /` +
-    ancestors +
+    // @Router  /graph/` +
+    ancestor_under_score +
     ` [get]
     func ` +
     ancestors +
-    `(c *gin.Context) {
+    `(c *ctx.Context) {
       filter := graphql.Filter{
         First:     c.QueryInt("first"),
         Skip:      c.QueryInt("skip"),
@@ -51,7 +61,7 @@ function suffix(go, url) {
       }
       c.JsonRows(List` +
     ancestors +
-    `(c.Request.Context(), ` +
+    `(c.Request.Context(), &` +
     ancestorsFilter +
     `{Filter: filter}))
     }
@@ -130,7 +140,10 @@ func List` +
     swaggo
   )
 }
-const prefix = `package graphql
+const prefix =
+  `package ` +
+  packageName +
+  `
 
 import (
 	"context"
