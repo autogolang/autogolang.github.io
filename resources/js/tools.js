@@ -6,35 +6,36 @@ function lowerInitial(string) {
 }
 const packageName = 'gql'
 function suffix(go, url) {
-  const ancestors = toProperCase(go.keys?.[0] || 'resp'),
-    ancestor = singularize(ancestors),
-    ancestorsFilter = ancestors + 'Filter',
-    ancestor_under_score = camelCaseToUnderscore(ancestors),
-    ancestorSpace = ancestor_under_score.replace(/_/g, ' ')
+  const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
+    Ancestor = singularize(Ancestors),
+    ancestors = lowerInitial(Ancestors),
+    AncestorsFilter = Ancestors + 'Filter',
+    Ancestors_under_score = camelCaseToUnderscore(Ancestors),
+    AncestorsSpace = Ancestors_under_score.replace(/_/g, ' ')
   const goStruct =
-    ancestors +
+    Ancestors +
     ' []' +
-    ancestor +
+    Ancestor +
     TAGS +
     ancestors +
     '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end})"`'
   const filter =
     `type ` +
-    ancestorsFilter +
+    AncestorsFilter +
     ` struct {
       graphql.Filter
     }`
   const swaggo =
     `// r.GET("graph/` +
-    ancestor_under_score +
+    ancestors +
     `", ctx.Handler(` +
     packageName +
     `.` +
-    ancestors +
+    Ancestors +
     `))
     // @tags    graphql
     // @Summary get ` +
-    ancestorSpace +
+    AncestorsSpace +
     `
     // @Produce json
     // @Param   first      query    string false "first"
@@ -44,13 +45,13 @@ function suffix(go, url) {
     // @Param   order_by   query    string false "order_by"
     // @Success 200        {object} ctx.R
     // @Success 302        {object} []` +
-    ancestor +
+    Ancestor +
     ` "the structure in data of code 200 above, <br> click "Model" to view field details."
     // @Router  /graph/` +
-    ancestor_under_score +
+    Ancestors_under_score +
     ` [get]
     func ` +
-    ancestors +
+    Ancestors +
     `(c *ctx.Context) {
       filter := graphql.Filter{
         First:     c.QueryInt("first"),
@@ -60,22 +61,22 @@ function suffix(go, url) {
         OrderBy:   c.Query("order_by"),
       }
       c.JsonRows(List` +
-    ancestors +
+    Ancestors +
     `(c.Request.Context(), &` +
-    ancestorsFilter +
+    AncestorsFilter +
     `{Filter: filter}))
     }
     `
   return (
-    go.go.replace(ancestors, ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
+    go.go.replace(Ancestors, Ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
     filter +
     `
 func List` +
-    ancestors +
+    Ancestors +
     `(ctx context.Context, reqs ...*` +
-    ancestorsFilter +
+    AncestorsFilter +
     `) ([]` +
-    ancestor +
+    Ancestor +
     `, error) {
       var result struct {
         ` +
@@ -84,16 +85,16 @@ func List` +
       }
       const reqUpperLimit = 1000
       url` +
-    ancestors +
+    Ancestors +
     ` := "` +
     url +
     `"
       client := graphql.NewClient(url` +
-    ancestors +
+    Ancestors +
     `, nil)
       if len(reqs) == 0 {
         reqs = append(reqs, &` +
-    ancestorsFilter +
+    AncestorsFilter +
     `{})
       }
       req := reqs[0]
@@ -113,26 +114,26 @@ func List` +
         return nil, err
       }
       // if there are result.` +
-    ancestors +
+    Ancestors +
     ` over reqUpperLimit, query again
       if len(result.` +
-    ancestors +
+    Ancestors +
     `) == reqUpperLimit {
         req.Skip += reqUpperLimit
         queue, err := List` +
-    ancestors +
+    Ancestors +
     `(ctx, req)
         if err != nil {
           return nil, err
         }
         result.` +
-    ancestors +
+    Ancestors +
     ` = append(result.` +
-    ancestors +
+    Ancestors +
     `, queue...)
       }
       return result.` +
-    ancestors +
+    Ancestors +
     `, nil
     }
     
