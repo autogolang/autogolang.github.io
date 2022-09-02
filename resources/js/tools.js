@@ -14,17 +14,18 @@ function suffix(go, url) {
     TAGS +
     ancestors +
     '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end)"`'
-  const filter = `type GetKlineLogsFilter struct {
-      First        int
-      Skip         int
-      OrderBy      string
-      OrderDescend bool //逆序
-      TimeStart    int
-      TimeEnd      int
+  const filter =
+    `type ` +
+    ancestorsFilter +
+    ` struct {
+      graphql.Filter
     }`
   const swaggo =
-    `// @tags    holding
-    // @Summary get bana price
+    `
+    // @tags    graphql
+    // @Summary get ` +
+    ancestors +
+    `
     // @Produce json
     // @Param   first query    string false "first"
     // @Param   skip query    string false "skip"
@@ -32,22 +33,27 @@ function suffix(go, url) {
     // @Param   time_end query    string false "time_end"
     // @Param   order_by query    string false "order_by"
     // @Success 200         {object} R
-    // @Success 302 {object} map[string]decimal.Decimal "the structure in data of code 200 above, <br> click "Model" to view field details."
-    // @Router  /bana_balance [get]
+    // @Success 302 {object} []` +
+    ancestor +
+    ` "the structure in data of code 200 above, <br> click "Model" to view field details."
+    // @Router  /` +
+    ancestors +
+    ` [get]
     func ` +
     ancestors +
     `(c *gin.Context) {
-      c.JSON(returnRows(graphql.` +
-    ancestors +
-    `(c.Request.Context(), graphql.` +
-    ancestorsFilter +
-    `{
-        First:     ToInt(c.Query("first")),
-        Skip:      ToInt(c.Query("skip")),
-        TimeStart: ToInt(c.Query("time_start")),
-        TimeEnd:   ToInt(c.Query("time_end")),
+      filter := graphql.Filter{
+        First:     c.QueryInt("first"),
+        Skip:      c.QueryInt("skip"),
+        TimeStart: c.QueryInt("time_start"),
+        TimeEnd:   c.QueryInt("time_end"),
         OrderBy:   c.Query("order_by"),
-      })))
+      }
+      c.JsonRows(List` +
+    ancestors +
+    `(c.Request.Context(), ` +
+    ancestorsFilter +
+    `{Filter: filter}))
     }
     `
   return (
@@ -56,9 +62,9 @@ function suffix(go, url) {
     `
 func List` +
     ancestors +
-    `(ctx context.Context, reqs ...*Get` +
-    ancestors +
-    `Filter) ([]` +
+    `(ctx context.Context, reqs ...*` +
+    ancestorsFilter +
+    `) ([]` +
     ancestor +
     `, error) {
       var result struct {
@@ -76,7 +82,7 @@ func List` +
     ancestors +
     `, nil)
       if len(reqs) == 0 {
-        reqs = append(reqs, &Get` +
+        reqs = append(reqs, &` +
     ancestorsFilter +
     `{})
       }
@@ -120,7 +126,8 @@ func List` +
     `, nil
     }
     
-`
+` +
+    swaggo
   )
 }
 const prefix = `package graphql
