@@ -18,7 +18,7 @@ function suffix(go, url) {
     Ancestor +
     TAGS +
     ancestors +
-    '(first:$first,orderBy:$orderBy,skip:$skip,where:{timestamp_gte:$start,timestamp_lt:$end})"`'
+    '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
   const filter =
     `type ` +
     AncestorsFilter +
@@ -48,17 +48,17 @@ function suffix(go, url) {
     Ancestor +
     ` "the structure in data of code 200 above, <br> click "Model" to view field details."
     // @Router  /graph/` +
-    Ancestors_under_score +
+    ancestors +
     ` [get]
     func ` +
     Ancestors +
     `(c *ctx.Context) {
       filter := graphql.Filter{
-        First:     c.QueryInt("first"),
-        Skip:      c.QueryInt("skip"),
-        TimeStart: c.QueryInt("time_start"),
-        TimeEnd:   c.QueryInt("time_end"),
-        OrderBy:   c.Query("order_by"),
+        First:        c.QueryInt("first"),
+        Skip:         c.QueryInt("skip"),
+        OrderBy:      c.Query("order_by"),
+        OrderDescend: c.Query("order_descend") == "true",
+        // Where:        c.PostFormMap("where"),
       }
       c.JsonRows(List` +
     Ancestors +
@@ -101,14 +101,17 @@ func List` +
       if req.First == 0 {
         req.First = reqUpperLimit
       }
-      if req.TimeEnd==0 {
-        req.TimeEnd = int(time.Now().Unix())
+      orderDirection := "asc"
+      if req.OrderDescend{
+        orderDirection = "desc"
       }
+      where := ""
       vars := map[string]interface{}{
         "first": graphql.Int(req.First),
         "skip":  graphql.Int(req.Skip),
-        "start": graphql.Int(req.TimeStart),
-        "end":   graphql.Int(req.TimeEnd),
+        "orderBy": graphql.String(req.OrderBy),
+        "orderDirection": graphql.String(orderDirection),
+        // "where": graphql.String(req.Where),
       }
       if err := client.Query(ctx, &result, vars); err != nil {
         return nil, err
