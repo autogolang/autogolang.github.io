@@ -10,8 +10,9 @@ function suffix(go, url) {
     Ancestor = singularize(Ancestors),
     ancestors = lowerInitial(Ancestors),
     AncestorsFilter = Ancestors + 'Filter',
-    Ancestors_under_score = camelCaseToUnderscore(Ancestors),
-    AncestorsSpace = Ancestors_under_score.replace(/_/g, ' ')
+    ancestors_under_score = camelCaseToUnderscore(Ancestors),
+    AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
+    ancestorLispCase = ancestors_under_score.replace(/_/g, '-')
   const goStruct =
     Ancestors +
     ' []' +
@@ -28,14 +29,14 @@ function suffix(go, url) {
   const swaggo =
     `// r.GET("graph/` +
     ancestors +
-    `", ctx.Handler(` +
+    `", middleware.Handler(` +
     packageName +
     `.` +
     Ancestors +
     `))
     // @tags    graphql
     // @Summary get ` +
-    AncestorsSpace +
+    AncestorsTitleCase +
     `
     // @Produce json
     // @Param   first      query    string false "first"
@@ -43,28 +44,33 @@ function suffix(go, url) {
     // @Param   time_start query    string false "time_start"
     // @Param   time_end   query    string false "time_end"
     // @Param   order_by   query    string false "order_by"
-    // @Success 200        {object} ctx.R
+    // @Success 200        {object} middleware.R
     // @Success 302        {object} []` +
     Ancestor +
     ` "the structure in data of code 200 above, <br> click "Model" to view field details."
     // @Router  /graph/` +
-    ancestors +
+    ancestorLispCase +
     ` [get]
     func ` +
     Ancestors +
-    `(c *ctx.Context) {
-      filter := graphql.Filter{
-        First:        c.QueryInt("first"),
-        Skip:         c.QueryInt("skip"),
-        OrderBy:      c.Query("order_by"),
-        OrderDescend: c.Query("order_descend") == "true",
-        // Where:        c.PostFormMap("where"),
-      }
-      c.JsonRows(List` +
+    `(c *middleware.Context) string {
+    if c == nil {
+      return "` +
+    ancestorLispCase +
+    `"
+    }
+    filter := graphql.Filter{
+      First:        c.QueryInt("first"),
+      Skip:         c.QueryInt("skip"),
+      OrderBy:      c.Query("order_by"),
+      OrderDescend: c.Query("order_descend") == "true",
+    }
+    c.JsonList(List` +
     Ancestors +
     `(c.Request.Context(), &` +
     AncestorsFilter +
     `{Filter: filter}))
+    return ""
     }
     `
   return (
@@ -101,17 +107,18 @@ func List` +
       if req.First == 0 {
         req.First = reqUpperLimit
       }
+      if req.OrderBy == "" {
+        req.OrderBy = "id"
+      }
       orderDirection := "asc"
       if req.OrderDescend{
         orderDirection = "desc"
       }
-      where := ""
       vars := map[string]interface{}{
         "first": graphql.Int(req.First),
         "skip":  graphql.Int(req.Skip),
         "orderBy": graphql.String(req.OrderBy),
         "orderDirection": graphql.String(orderDirection),
-        // "where": graphql.String(req.Where),
       }
       if err := client.Query(ctx, &result, vars); err != nil {
         return nil, err
