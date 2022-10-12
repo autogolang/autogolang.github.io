@@ -6,6 +6,7 @@ function lowerInitial(string) {
 }
 const packageName = 'gql'
 function suffix(go, url) {
+  let timeFlag = false
   const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
     Ancestor = singularize(Ancestors),
     ancestors = lowerInitial(Ancestors),
@@ -40,10 +41,15 @@ function suffix(go, url) {
     `
     // @Produce json
     // @Param   first      query    string false "first"
-    // @Param   skip       query    string false "skip"
+    // @Param   skip       query    string false "skip"` +
+    (timeFlag
+      ? `
     // @Param   time_start query    string false "time_start"
-    // @Param   time_end   query    string false "time_end"
+    // @Param   time_end   query    string false "time_end"`
+      : '') +
+    `
     // @Param   order_by   query    string false "order_by"
+    // @Param   order_descend query    string false "order_descend"
     // @Success 200        {object} middleware.R
     // @Success 302        {object} []` +
     Ancestor +
@@ -65,7 +71,7 @@ function suffix(go, url) {
       OrderBy:      c.Query("order_by"),
       OrderDescend: c.Query("order_descend") == "true",
     }
-    c.JsonList(List` +
+    c.Render(List` +
     Ancestors +
     `(c.Request.Context(), &` +
     AncestorsFilter +
