@@ -22,7 +22,7 @@ function suffix(go, url) {
     ancestors +
     '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
   const filter =
-    `type ` +
+    "\ntype " +
     AncestorsFilter +
     ` struct {
       graphql.Filter
