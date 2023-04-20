@@ -82,7 +82,7 @@ $(function () {
     if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     $('#output').html(coloredOutput.value)
-    // console.error({ finalOutput, coloredOutput });
+    console.error({ finalOutput, coloredOutput });
     emptyMsg['output'] = 'Waiting input to generate...'
     console.log('output', changeURLArg('url', $url.text()))
     window.history.replaceState({}, '', changeURLArg('schema', $schema.text().replace(/\n/g, '%0A')))
