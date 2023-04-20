@@ -78,11 +78,12 @@ $(function () {
       }
       return
     }
-    var finalOutput = prefix + suffix(output, $url.text())
-    if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
+    var strOutput = prefix + suffix(output, $url.text())
+    if (typeof gofmt === "function") finalOutput = gofmt(strOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
+    console.error({strOutput, finalOutput, coloredOutput });
+    if(finalOutput.length<strOutput.length/2)coloredOutput.value=strOutput
     $('#output').html(coloredOutput.value)
-    console.error({ finalOutput, coloredOutput });
     emptyMsg['output'] = 'Waiting input to generate...'
     console.log('output', changeURLArg('url', $url.text()))
     window.history.replaceState({}, '', changeURLArg('schema', $schema.text().replace(/\n/g, '%0A')))
