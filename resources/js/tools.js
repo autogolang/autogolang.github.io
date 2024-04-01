@@ -185,6 +185,7 @@ function GetRequest(url, data) {
     contentType: 'application/json',
     dataType: 'json',
     origin: '*',
+    crossDomain: true,
     headers: {
               'Access-Control-Allow-Origin': '*'
           },
@@ -197,6 +198,7 @@ function PostRequest(url, data) {
     data: data,
     contentType: 'application/json',
     dataType: 'json',
+    crossDomain: true,
     headers: {
               'Access-Control-Allow-Origin': '*'
           },
