@@ -185,6 +185,9 @@ function GetRequest(url, data) {
     contentType: 'application/json',
     dataType: 'json',
     origin: '*',
+    headers: {
+              'Access-Control-Allow-Origin': '*'
+          },
   })
 }
 function PostRequest(url, data) {
@@ -194,6 +197,9 @@ function PostRequest(url, data) {
     data: data,
     contentType: 'application/json',
     dataType: 'json',
+    headers: {
+              'Access-Control-Allow-Origin': '*'
+          },
   })
 }
 function changeURLArg(arg, arg_val) {
