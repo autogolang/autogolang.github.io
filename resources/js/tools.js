@@ -177,27 +177,14 @@ function decoder(encoded) {
   var query = decodeURIComponent(splitted[1]).replace('?query=', ' ')
   return [splitted[0], query]
 }
-function GetRequest(url, data) {
+function Request(url, data, isPost) {
   return $.ajax({
-    type: 'GET',
+    type: isPost ? 'POST' : 'GET',
     url: url,
     data: data,
     contentType: 'application/json',
     dataType: 'json',
     origin: '*',
-    crossDomain: true,
-    headers: {
-              'Access-Control-Allow-Origin': '*'
-          },
-  })
-}
-function PostRequest(url, data) {
-  return $.ajax({
-    type: 'POST',
-    url: url,
-    data: data,
-    contentType: 'application/json',
-    dataType: 'json',
     crossDomain: true,
     headers: {
               'Access-Control-Allow-Origin': '*'
