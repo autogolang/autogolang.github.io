@@ -204,10 +204,10 @@ function PostRequest(url, data) {
           },
   })
 }
-function changeURLArg(arg, arg_val) {
+function changeURLArg(arg, val) {
   const url = location.href
   var pattern = arg + '=([^&]*)'
-  var replaceText = arg + '=' + arg_val
+  var replaceText = arg + '=' + encodeURIComponent(val)
   if (url.match(pattern)) {
     var tmp = '/(' + arg + '=)([^&]*)/gi'
     tmp = url.replace(eval(tmp), replaceText)
