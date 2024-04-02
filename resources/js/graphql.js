@@ -106,7 +106,7 @@ $(function () {
     let diff = new Date().getTime() - lastReq
     if (diff < 2000) return
     lastReq = new Date().getTime()
-    Request($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, ' '), $('#post').is(':checked'))
+    Request($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, ' '), $('#method').val())
       .then(function (data) {
         console.log(data)
         $json.text(stringify(data))
