@@ -9,8 +9,8 @@ $(function () {
   const $schema = $('#schema')
   const $json = $('#input')
   const $go = $('#output')
-  $url.text(getUrlQuery('url'))
-  $schema.text(getUrlQuery('schema'))
+  $url.text(getUrlQuery('url') ?? 'https://httpbin.org/post?arg1=6.0&&arg2=abc')
+  $schema.text(getUrlQuery('schema') ?? '{"body":2}')
   req()
   // Hides placeholder text
   $encoded.on('focus', onfocus)
