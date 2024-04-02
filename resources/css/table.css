@@ -182,11 +182,11 @@ table {
 }
 
 th {
-  padding: 12px;
+  padding: 4px;
   background: #375eab;
   text-align: center;
   color: #fff;
-  font-size: 20px;
+  font-size: 14px;
 }
 
 th label {
