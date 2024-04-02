@@ -86,7 +86,7 @@ $(function () {
     $('#output').html(coloredOutput.value)
     emptyMsg['output'] = 'Waiting input to generate...'
     console.log('output', changeURLArg('url', $url.text()))
-    window.history.replaceState({}, '', changeURLArg('schema', $schema.text().replace(/\n/g, '%0A')))
+    window.history.replaceState({}, '', changeURLArg('schema', $schema.text()))
     window.history.replaceState({}, '', changeURLArg('url', $url.text()))
   }
   function jsonConvert() {
