@@ -30,7 +30,7 @@ function suffix(go, url) {
   const swaggo =
     `// r.GET("graph/` +
     ancestors +
-    `", middleware.Handler(` +
+    `", ginny.Handler(` +
     packageName +
     `.` +
     Ancestors +
@@ -50,7 +50,7 @@ function suffix(go, url) {
     `
     // @Param   order_by   query    string false "order_by"
     // @Param   order_descend query    string false "order_descend"
-    // @Success 200        {object} middleware.R
+    // @Success 200        {object} ginny.R
     // @Success 302        {object} []` +
     Ancestor +
     ` "the structure in data of code 200 above, <br> click "Model" to view field details."
@@ -59,7 +59,7 @@ function suffix(go, url) {
     ` [get]
     func ` +
     Ancestors +
-    `(c *middleware.Context) string {
+    `(c *ginny.Context) string {
     if c == nil {
       return "` +
     ancestorLispCase +
@@ -164,8 +164,8 @@ const prefix =
 
 import (
 	"context"
-	"time"
 
+	"github.com/conbanwa/ginny"
 	"github.com/conbanwa/graphql"
 	"github.com/shopspring/decimal"
 )
