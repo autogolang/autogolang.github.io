@@ -104,9 +104,9 @@ $(function () {
   }
   function req() {
     let diff = new Date().getTime() - lastReq
-    if (diff < 1000) return
+    if (diff < 2000) return
     lastReq = new Date().getTime()
-    PostRequest($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, ' '))
+    Request($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, ' '), $('#decimal').is(':checked'))
       .then(function (data) {
         console.log(data)
         $json.text(stringify(data))
