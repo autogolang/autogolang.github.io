@@ -177,9 +177,9 @@ function decoder(encoded) {
   var query = decodeURIComponent(splitted[1]).replace('?query=', ' ')
   return [splitted[0], query]
 }
-function Request(url, data, isPost) {
+function Request(url, data, method = 'GET') {
   return $.ajax({
-    type: isPost ? 'POST' : 'GET',
+    type: method,
     url: url,
     data: data,
     contentType: 'application/json',
