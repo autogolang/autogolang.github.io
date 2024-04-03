@@ -17,20 +17,25 @@ function suffix(go, url, METHOD) {
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
         ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
-        method = METHOD?.toLowerCase(),
-        Method = toProperCase(method)
-    const goStruct =
-        Ancestors +
-        ' []' +
-        Ancestor +
-        TAGS +
-        ancestors +
-        '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
-    const filter = `
+        goStruct =
+            Ancestors +
+            ' []' +
+            Ancestor +
+            TAGS +
+            ancestors +
+            '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`',
+        filter = `
 type ${AncestorsFilter} struct {
     graphql.Filter
     }`
-    const swaggo = `
+
+    function genSwagGo(MTD) {
+        if (!MTD) {
+            return ''
+        }
+        const method = MTD?.toLowerCase()
+        return `
+
 // r.${METHOD}("graph/${ancestors}", ginny.Handler(${packageName}.${Ancestors}))
 // @tags    graphql
 // @Summary ${method} ${AncestorsTitleCase}
@@ -45,7 +50,14 @@ ${timeFlag ? `
 // @Success 200        {object} ginny.R
 // @Success 302        {object} []${Ancestor} "the structure in data of code 200 above, click "Model" to view field details."
 // @Router  /graph/${ancestorLispCase} [${method}]`
-    const ginny = `
+    }
+
+    function genGinny(MTD) {
+        if (!MTD) {
+            return ''
+        }
+        const Method = toProperCase(MTD)
+        return `
 func ${Method}${Ancestors}(c *ginny.Context) string {
     if c == nil {
       return "${ancestorLispCase}"
@@ -60,9 +72,10 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
     return ""
 }
     `
+    }
     return (
         go.go.replace(Ancestors, Ancestor)
-            // .replace(/type Data struct \{\n.*\n.*/, '')
+        // .replace(/type Data struct \{\n.*\n.*/, '')
         + filter +
         `
 func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
@@ -105,8 +118,7 @@ func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Anc
     result.${Ancestors} = append(result.${Ancestors}, queue...)
     }
     return result.${Ancestors}, nil
-}${METHOD ? swaggo + ginny : ''}
-`)
+}` + genSwagGo(METHOD) + genGinny(METHOD))
 }
 
 const prefix =
