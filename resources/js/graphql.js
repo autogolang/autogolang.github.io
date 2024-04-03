@@ -64,14 +64,14 @@ $(function () {
     let output = JsonToGo(input, '', true, false, $('#omitempty').is(':checked'), $('#decimal').is(':checked'), true)
     if (output.error) {
       $('#output').html('<span class="clr-red">' + output.error + '</span>')
-      console.log('ERROR:', output, output.error)
+      x({output})
       var parsedError = output.error.match(/Unexpected token .+ in JSON at position (\d+)/)
       if (parsedError) {
         try {
           var faultyIndex = parsedError.length == 2 && parsedError[1] && parseInt(parsedError[1])
           faultyIndex && $('#output').html(constructJSONErrorHTML(output.error, faultyIndex, input))
         } catch (err) {
-          console.error(err)
+          x(err)
         }
       }
       return
@@ -83,7 +83,7 @@ $(function () {
     if(finalOutput.length<strOutput.length/2)coloredOutput.value=strOutput
     $('#output').html(coloredOutput.value)
     emptyMsg['output'] = 'Waiting input to generate...'
-    console.log('output', changeURLArg('url', $url.text()))
+    z('output', changeURLArg('url', $url.text()))
     window.history.replaceState({}, '', changeURLArg('schema', $schema.text()))
     window.history.replaceState({}, '', changeURLArg('url', $url.text()))
   }
@@ -110,6 +110,6 @@ $(function () {
         $json.text(stringify(data))
       })
       .then(jsonConvert)
-      .catch(console.error)
+      .catch(x)
   }
 })

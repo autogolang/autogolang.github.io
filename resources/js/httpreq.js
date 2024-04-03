@@ -74,14 +74,14 @@ $(function () {
     )
     if (output.error) {
       $('#output').html('<span class="clr-red">' + output.error + '</span>')
-      console.log('ERROR:', output, output.error)
+      x({output})
       var parsedError = output.error.match(/Unexpected token .+ in JSON at position (\d+)/)
       if (parsedError) {
         try {
           var faultyIndex = parsedError.length == 2 && parsedError[1] && parseInt(parsedError[1])
           faultyIndex && $('#output').html(constructJSONErrorHTML(output.error, faultyIndex, input))
         } catch (err) {
-          console.log(err)
+          x(err)
         }
       }
       return
@@ -131,7 +131,7 @@ $(function () {
       url: $url.text(),
     }
     if (cache[stringify(opt)]) {
-      // console.log(cache, cache[stringify(opt)]);
+      // z(cache, cache[stringify(opt)]);
       $json.text(cache[opt])
       return
     }
@@ -162,6 +162,6 @@ $(function () {
         jsonConversion()
         cache[stringify(opt)] = stringify(data)
       })
-      .catch(console.error)
+      .catch(x)
   }
 })

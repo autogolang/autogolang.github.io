@@ -47,7 +47,7 @@ $(function () {
     )
     if (output.error) {
       $go.html('<span class="clr-red">' + output.error + '</span>')
-      console.log('ERROR:', output, output.error)
+      x({output})
       var parsedError = output.error.match(/Unexpected token .+ in JSON at position (\d+)/)
       if (parsedError) {
         try {

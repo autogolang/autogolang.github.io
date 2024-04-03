@@ -2,6 +2,7 @@ var emptyMsg = {}
 var cache = {}
 var lastReq = 0
 const z = console.log
+const x = console.error
 const t = console.trace
 function p(params) {
   t(params)

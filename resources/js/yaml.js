@@ -15,7 +15,7 @@ $(function () {
 
     if (output.error) {
       $('#output').html('<span class="clr-red">' + output.error + '</span>')
-      console.log('ERROR:', output, output.error)
+      x({output})
       var parsedError = output.error.match(/Unexpected token .+ in YAML at position (\d+)/)
       if (parsedError) {
         try {
