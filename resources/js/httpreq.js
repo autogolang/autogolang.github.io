@@ -2,6 +2,7 @@ emptyMsg['encoded'] = 'Paste full URL here'
 emptyMsg['url'] = 'Paste Post Request URL here'
 emptyMsg['schema'] = 'Paste GraphQL Schema here'
 emptyMsg['input'] = 'JSON will appear here'
+var TAGS = ' `json:"'
 $(function () {
   const $encoded = $('#encoded')
   const $url = $('#url')
@@ -143,7 +144,10 @@ $(function () {
         cache[stringify(opt)] = stringify(data)
         jsonConversion()
       })
-      .catch(() => forward(opt))
+      .catch((e) => {
+        z({opt,e})
+        forward(opt)
+      })
   }
   function forward(opt) {
     // const forwardUrl = "http://127.0.0.1:8080/data/req";
