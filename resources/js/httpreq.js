@@ -45,10 +45,8 @@ $(function () {
       $(this).html(formattedEmptyMsg(emptyMsg[id]))
       return false
       // $go.html(formattedEmptyMsg(emptyMsg["output"]));
-    } else if (val == emptyMsg[id]) {
-      return false
     }
-    return true
+    return val != emptyMsg[id]
   }
   $schema.keydown(preventTab)
   $json.keydown(preventTab)
@@ -68,7 +66,7 @@ $(function () {
     }
     let output = JsonToGo(
       input,
-      'RespBody',
+      $('#struct').val(),
       !$('#inline').is(':checked'),
       false,
       $('#omitempty').is(':checked'),
@@ -92,7 +90,7 @@ $(function () {
     // if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     $('#output').html(coloredOutput.value)
-    // console.error({ finalOutput, coloredOutput });
+    z({ finalOutput, output });
     emptyMsg['output'] = 'Waiting input to generate...'
     changeURLArg('url', $url.text())
     window.history.replaceState(
@@ -164,6 +162,6 @@ $(function () {
         jsonConversion()
         cache[stringify(opt)] = stringify(data)
       })
-      .catch((error) => console.error(error))
+      .catch(console.error)
   }
 })
