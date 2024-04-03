@@ -106,10 +106,7 @@ func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Anc
         result.${Ancestors} = append(result.${Ancestors}, queue...)
       }
       return result.${Ancestors}, nil
-    }
-    
-` +
-        METHOD ? swaggo + ginny : ''
+    }${METHOD ? swaggo + ginny : ''}`
     )
 }
 
