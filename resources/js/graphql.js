@@ -44,10 +44,8 @@ $(function () {
       $(this).html(formattedEmptyMsg(emptyMsg[id]))
       return false
       // $go.html(formattedEmptyMsg(emptyMsg["output"]));
-    } else if (val == emptyMsg[id]) {
-      return false
-    }
-    return true
+    } 
+    return val != emptyMsg[id]
   }
   $schema.keydown(preventTab)
   $json.keydown(preventTab)
@@ -73,7 +71,7 @@ $(function () {
           var faultyIndex = parsedError.length == 2 && parsedError[1] && parseInt(parsedError[1])
           faultyIndex && $('#output').html(constructJSONErrorHTML(output.error, faultyIndex, input))
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }
       return
@@ -112,5 +110,6 @@ $(function () {
         $json.text(stringify(data))
       })
       .then(jsonConvert)
+      .catch(console.error)
   }
 })
