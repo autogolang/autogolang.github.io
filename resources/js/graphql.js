@@ -61,7 +61,7 @@ $(function () {
       $('#output').html(formattedEmptyMsg(emptyMsg['output']))
       return
     }
-    let output = JsonToGo(input, '', true, false, $('#omitempty').is(':checked'), $('#decimal').is(':checked'), true)
+    let output = JsonToGo(input, $('#struct').val(), true, false, $('#omitempty').is(':checked'), $('#decimal').is(':checked'), true)
     if (output.error) {
       $('#output').html('<span class="clr-red">' + output.error + '</span>')
       x({output})

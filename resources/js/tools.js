@@ -10,7 +10,7 @@ const packageName = 'gql'
 
 function workout(go, url, METHOD) {
     let timeFlag = false
-    const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
+    const Ancestors = toProperCase(go.keys?.[0] || $('#struct').val()),
         Ancestor = singularize(Ancestors),
         ancestors = lowerInitial(Ancestors),
         AncestorsFilter = Ancestors + 'Filter',
