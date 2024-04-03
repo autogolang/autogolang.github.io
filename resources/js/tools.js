@@ -1,69 +1,56 @@
 function camelCaseToUnderscore(params) {
-  return params.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
+    return params.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
 }
+
 function lowerInitial(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1)
+    return string.charAt(0).toLowerCase() + string.slice(1)
 }
+
 const packageName = 'gql'
-function suffix(go, url) {
-  let timeFlag = false
-  const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
-    Ancestor = singularize(Ancestors),
-    ancestors = lowerInitial(Ancestors),
-    AncestorsFilter = Ancestors + 'Filter',
-    ancestors_under_score = camelCaseToUnderscore(Ancestors),
-    AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
-    ancestorLispCase = ancestors_under_score.replace(/_/g, '-')
-  const goStruct =
-    Ancestors +
-    ' []' +
-    Ancestor +
-    TAGS +
-    ancestors +
-    '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
-  const filter =
-    "\ntype " +
-    AncestorsFilter +
-    ` struct {
+
+function suffix(go, url, METHOD) {
+    let timeFlag = false
+    const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
+        Ancestor = singularize(Ancestors),
+        ancestors = lowerInitial(Ancestors),
+        AncestorsFilter = Ancestors + 'Filter',
+        ancestors_under_score = camelCaseToUnderscore(Ancestors),
+        AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
+        ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
+        method = METHOD.toLowerCase(),
+        Method = toProperCase(method)
+    const goStruct =
+        Ancestors +
+        ' []' +
+        Ancestor +
+        TAGS +
+        ancestors +
+        '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
+    const filter =
+        "\ntype " +
+        AncestorsFilter +
+        ` struct {
       graphql.Filter
     }`
-  const swaggo =
-    `// r.GET("graph/` +
-    ancestors +
-    `", ginny.Handler(` +
-    packageName +
-    `.` +
-    Ancestors +
-    `))
+    const swaggo =
+        `// r.${METHOD}("graph/${ancestors}", ginny.Handler(${packageName}.${Ancestors}))
     // @tags    graphql
-    // @Summary get ` +
-    AncestorsTitleCase +
-    `
+    // @Summary ${method} ${AncestorsTitleCase}
     // @Produce json
     // @Param   first      query    string false "first"
-    // @Param   skip       query    string false "skip"` +
-    (timeFlag
-      ? `
+    // @Param   skip       query    string false "skip"
+    ${timeFlag ? `
     // @Param   time_start query    string false "time_start"
-    // @Param   time_end   query    string false "time_end"`
-      : '') +
-    `
+    // @Param   time_end   query    string false "time_end"` : ''}
     // @Param   order_by   query    string false "order_by"
     // @Param   order_descend query    string false "order_descend"
     // @Success 200        {object} ginny.R
-    // @Success 302        {object} []` +
-    Ancestor +
-    ` "the structure in data of code 200 above, <br> click "Model" to view field details."
-    // @Router  /graph/` +
-    ancestorLispCase +
-    ` [get]
-    func ` +
-    Ancestors +
-    `(c *ginny.Context) string {
+    // @Success 302        {object} []${Ancestor} "the structure in data of code 200 above, click "Model" to view field details."
+    // @Router  /graph/${ancestorLispCase} [${method}]`
+    const ginny = `
+    func ${Method}${Ancestors}(c *ginny.Context) string {
     if c == nil {
-      return "` +
-    ancestorLispCase +
-    `"
+      return "${ancestorLispCase}"
     }
     filter := graphql.Filter{
       First:        c.QueryInt("first"),
@@ -71,43 +58,23 @@ function suffix(go, url) {
       OrderBy:      c.Query("order_by"),
       OrderDescend: c.Query("order_descend") == "true",
     }
-    c.Render(List` +
-    Ancestors +
-    `(c.Request.Context(), &` +
-    AncestorsFilter +
-    `{Filter: filter}))
+    c.Render(List${Ancestors}(c.Request.Context(), &${AncestorsFilter}{Filter: filter}))
     return ""
     }
     `
-  return (
-    go.go.replace(Ancestors, Ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
-    filter +
-    `
-func List` +
-    Ancestors +
-    `(ctx context.Context, reqs ...*` +
-    AncestorsFilter +
-    `) ([]` +
-    Ancestor +
-    `, error) {
+    return (
+        go.go.replace(Ancestors, Ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
+        filter +
+        `
+func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
       var result struct {
-        ` +
-    goStruct +
-    `
+        ${goStruct}
       }
       const reqUpperLimit = 1000
-      url` +
-    Ancestors +
-    ` := "` +
-    url +
-    `"
-      client := graphql.NewClient(url` +
-    Ancestors +
-    `, nil)
+      url${Ancestors} := "${url}"
+      client := graphql.NewClient(url${Ancestors}, nil)
       if len(reqs) == 0 {
-        reqs = append(reqs, &` +
-    AncestorsFilter +
-    `{})
+        reqs = append(reqs, &${AncestorsFilter}{})
       }
       req := reqs[0]
       if req.First == 0 {
@@ -129,108 +96,102 @@ func List` +
       if err := client.Query(ctx, &result, vars); err != nil {
         return nil, err
       }
-      // if there are result.` +
-    Ancestors +
-    ` over reqUpperLimit, query again
-      if len(result.` +
-    Ancestors +
-    `) == reqUpperLimit {
+      // if there are result.${Ancestors} over reqUpperLimit, query again
+      if len(result.${Ancestors}) == reqUpperLimit {
         req.Skip += reqUpperLimit
-        queue, err := List` +
-    Ancestors +
-    `(ctx, req)
+        queue, err := List${Ancestors}(ctx, req)
         if err != nil {
           return nil, err
         }
-        result.` +
-    Ancestors +
-    ` = append(result.` +
-    Ancestors +
-    `, queue...)
+        result.${Ancestors} = append(result.${Ancestors}, queue...)
       }
-      return result.` +
-    Ancestors +
-    `, nil
+      return result.${Ancestors}, nil
     }
     
 ` +
-    swaggo
-  )
+        METHOD ? swaggo + ginny : ''
+    )
 }
+
 const prefix =
-  `package ` +
-  packageName +
-  `
+    `package ` +
+    packageName +
+    `
 
 import (
 	"context"
 
 	"github.com/conbanwa/ginny"
-	"github.com/conbanwa/graphql"
-	"github.com/shopspring/decimal"
+	"github.com/conbanwa/graphql"split
 )
 `
 
 function decoder(encoded) {
-  const splitter = '/graphql'
-  var splitted = encoded.split(splitter)
-  var query = decodeURIComponent(splitted[1]).replace('?query=', ' ')
-  return [splitted[0], query]
+    const splitter = '/graphql'
+    const split = encoded.split(splitter);
+    const query = decodeURIComponent(split[1]).replace('?query=', ' ');
+    return [split[0], query]
 }
+
 function Request(url, data, method = 'GET') {
-  return $.ajax({
-    type: method,
-    url: url,
-    data: data,
-    contentType: 'application/json',
-    dataType: 'json',
-    origin: '*',
-    crossDomain: true,
-    headers: {
-              'Access-Control-Allow-Origin': '*'
-          },
-  })
+    return $.ajax({
+        type: method,
+        url: url,
+        data: data,
+        contentType: 'application/json',
+        dataType: 'json',
+        origin: '*',
+        crossDomain: true,
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
+    })
 }
+
 function changeURLArg(arg, val) {
-  const url = location.href
-  var pattern = arg + '=([^&]*)'
-  var replaceText = arg + '=' + encodeURIComponent(val)
-  if (url.match(pattern)) {
-    var tmp = '/(' + arg + '=)([^&]*)/gi'
-    tmp = url.replace(eval(tmp), replaceText)
-    return tmp
-  } else {
-    if (url.match('[?]')) {
-      return url + '&' + replaceText
+    const url = location.href
+    const pattern = arg + '=([^&]*)';
+    const replaceText = arg + '=' + encodeURIComponent(val);
+    if (url.match(pattern)) {
+        var tmp = '/(' + arg + '=)([^&]*)/gi'
+        tmp = url.replace(eval(tmp), replaceText)
+        return tmp
     } else {
-      return url + '?' + replaceText
+        if (url.match('[?]')) {
+            return url + '&' + replaceText
+        } else {
+            return url + '?' + replaceText
+        }
     }
-  }
 }
+
 function getUrlQuery(arg) {
-  var url = location.search //获取url中"?"符后的字串
-  if (url.indexOf('?') != -1) {
-    var str = url.substr(1)
-    strs = str.split('&')
-    for (var i = 0; i < strs.length; i++) {
-      if (arg == strs[i].split('=')[0]) {
-        return unescape(strs[i].split('=')[1])
-      }
+    const url = location.search; //获取url中"?"符后的字串
+    let strs;
+    if (url.indexOf('?') != -1) {
+        var str = url.substr(1)
+        strs = str.split('&')
+        for (var i = 0; i < strs.length; i++) {
+            if (arg == strs[i].split('=')[0]) {
+                return unescape(strs[i].split('=')[1])
+            }
+        }
     }
-  }
 }
+
 function lintName(name) {
-  if (name === 'id') return 'ID'
-  name = name.replace(/Id[A_Z]/g, 'ID')
-  name = name.replace(/Id$/g, 'ID')
-  //implement lint
-  return name[0].toUpperCase() + name.slice(1)
+    if (name === 'id') return 'ID'
+    name = name.replace(/Id[A_Z]/g, 'ID')
+    name = name.replace(/Id$/g, 'ID')
+    //implement lint
+    return name[0].toUpperCase() + name.slice(1)
 }
+
 function singularize(name) {
-  if (name.endsWith('ies')) {
-    return name.slice(0, -3) + 'y'
-  } else if (name.endsWith('s')) {
-    return name.slice(0, -1)
-  }
-  return name
+    if (name.endsWith('ies')) {
+        return name.slice(0, -3) + 'y'
+    } else if (name.endsWith('s')) {
+        return name.slice(0, -1)
+    }
+    return name
 }
