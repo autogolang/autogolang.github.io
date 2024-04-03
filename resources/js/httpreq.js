@@ -87,7 +87,7 @@ $(function () {
       return
     }
     var finalOutput = workout(output, $url.text())
-    // if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
+    finalOutput = gofmt?.(finalOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     $('#output').html(coloredOutput.value)
     z({ finalOutput, output });

@@ -57,7 +57,7 @@ $(function () {
       }
     } else {
       var finalOutput = output.go
-      if (typeof gofmt === 'function') finalOutput = gofmt(output.go)
+      finalOutput = gofmt?.(output.go)
       var coloredOutput = hljs.highlight('go', finalOutput)
       $go.html(coloredOutput.value)
     }

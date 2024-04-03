@@ -110,6 +110,5 @@ $(function () {
         $json.text(stringify(data))
       })
       .then(jsonConvert)
-      .catch(x)
   }
 })
