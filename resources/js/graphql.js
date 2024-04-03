@@ -78,7 +78,7 @@ $(function () {
       }
       return
     }
-    var strOutput = prefix + suffix(output, $url.text())
+    var strOutput = prefix + suffix(output, $url.text(), $('#method').val())
     if (typeof gofmt === "function") finalOutput = gofmt(strOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     console.error({strOutput, finalOutput, coloredOutput });
