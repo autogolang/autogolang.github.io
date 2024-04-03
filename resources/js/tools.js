@@ -8,7 +8,7 @@ function lowerInitial(string) {
 
 const packageName = 'gql'
 
-function suffix(go, url, METHOD) {
+function workout(go, url, METHOD) {
     let timeFlag = false
     const Ancestors = toProperCase(go.keys?.[0] || 'resp'),
         Ancestor = singularize(Ancestors),
@@ -29,6 +29,17 @@ type ${AncestorsFilter} struct {
     graphql.Filter
     }`
 
+    function genImports(MTD) {
+        return `package ${packageName}
+
+import (
+	"context"
+
+	${MTD ? '"github.com/conbanwa/ginny"\n' : ''}"github.com/conbanwa/graphql"
+)
+`
+    }
+
     function genSwagGo(MTD) {
         if (!MTD) {
             return ''
@@ -41,8 +52,7 @@ type ${AncestorsFilter} struct {
 // @Summary ${method} ${AncestorsTitleCase}
 // @Produce json
 // @Param   first      query    string false "first"
-// @Param   skip       query    string false "skip"
-${timeFlag ? `
+// @Param   skip       query    string false "skip"${timeFlag ? `
 // @Param   time_start query    string false "time_start"
 // @Param   time_end   query    string false "time_end"` : ''}
 // @Param   order_by   query    string false "order_by"
@@ -73,9 +83,10 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
 }
     `
     }
-    return (
+
+    return (genImports(METHOD) +
         go.go.replace(Ancestors, Ancestor)
-        // .replace(/type Data struct \{\n.*\n.*/, '')
+        // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
         + filter +
         `
 func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
@@ -120,17 +131,6 @@ func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Anc
     return result.${Ancestors}, nil
 }` + genSwagGo(METHOD) + genGinny(METHOD))
 }
-
-const prefix =
-    `package ${packageName}
-
-import (
-	"context"
-
-	"github.com/conbanwa/ginny"
-	"github.com/conbanwa/graphql"
-)
-`
 
 function decoder(encoded) {
     const splitter = '/graphql'
@@ -179,7 +179,7 @@ function getUrlQuery(arg) {
         strs = str.split('&')
         for (var i = 0; i < strs.length; i++) {
             if (arg == strs[i].split('=')[0]) {
-                return unescape(strs[i].split('=')[1])
+                return decodeURIComponent(unescape(strs[i].split('=')[1]))
             }
         }
     }
