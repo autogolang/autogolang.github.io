@@ -86,7 +86,7 @@ $(function () {
       }
       return
     }
-    var finalOutput = prefix + suffix(output, $url.text())
+    var finalOutput = workout(output, $url.text())
     // if (typeof gofmt === "function") finalOutput = gofmt(finalOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     $('#output').html(coloredOutput.value)

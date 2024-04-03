@@ -76,7 +76,7 @@ $(function () {
       }
       return
     }
-    var strOutput = prefix + suffix(output, $url.text(), $('#method').val())
+    var strOutput = workout(output, $url.text(), $('#method').val())
     finalOutput = gofmt?.(strOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
     z({strOutput, finalOutput, output});
