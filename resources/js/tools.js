@@ -26,29 +26,27 @@ function suffix(go, url, METHOD) {
         TAGS +
         ancestors +
         '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`'
-    const filter =
-        "\ntype " +
-        AncestorsFilter +
-        ` struct {
-      graphql.Filter
+    const filter = `
+type ${AncestorsFilter} struct {
+    graphql.Filter
     }`
-    const swaggo =
-        `// r.${METHOD}("graph/${ancestors}", ginny.Handler(${packageName}.${Ancestors}))
-    // @tags    graphql
-    // @Summary ${method} ${AncestorsTitleCase}
-    // @Produce json
-    // @Param   first      query    string false "first"
-    // @Param   skip       query    string false "skip"
-    ${timeFlag ? `
-    // @Param   time_start query    string false "time_start"
-    // @Param   time_end   query    string false "time_end"` : ''}
-    // @Param   order_by   query    string false "order_by"
-    // @Param   order_descend query    string false "order_descend"
-    // @Success 200        {object} ginny.R
-    // @Success 302        {object} []${Ancestor} "the structure in data of code 200 above, click "Model" to view field details."
-    // @Router  /graph/${ancestorLispCase} [${method}]`
+    const swaggo = `
+// r.${METHOD}("graph/${ancestors}", ginny.Handler(${packageName}.${Ancestors}))
+// @tags    graphql
+// @Summary ${method} ${AncestorsTitleCase}
+// @Produce json
+// @Param   first      query    string false "first"
+// @Param   skip       query    string false "skip"
+${timeFlag ? `
+// @Param   time_start query    string false "time_start"
+// @Param   time_end   query    string false "time_end"` : ''}
+// @Param   order_by   query    string false "order_by"
+// @Param   order_descend query    string false "order_descend"
+// @Success 200        {object} ginny.R
+// @Success 302        {object} []${Ancestor} "the structure in data of code 200 above, click "Model" to view field details."
+// @Router  /graph/${ancestorLispCase} [${method}]`
     const ginny = `
-    func ${Method}${Ancestors}(c *ginny.Context) string {
+func ${Method}${Ancestors}(c *ginny.Context) string {
     if c == nil {
       return "${ancestorLispCase}"
     }
@@ -60,66 +58,64 @@ function suffix(go, url, METHOD) {
     }
     c.Render(List${Ancestors}(c.Request.Context(), &${AncestorsFilter}{Filter: filter}))
     return ""
-    }
+}
     `
     return (
         go.go.replace(Ancestors, Ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
         filter +
         `
 func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
-      var result struct {
-        ${goStruct}
-      }
-      const reqUpperLimit = 1000
-      url${Ancestors} := "${url}"
-      client := graphql.NewClient(url${Ancestors}, nil)
-      if len(reqs) == 0 {
-        reqs = append(reqs, &${AncestorsFilter}{})
-      }
-      req := reqs[0]
-      if req.First == 0 {
-        req.First = reqUpperLimit
-      }
-      if req.OrderBy == "" {
-        req.OrderBy = "id"
-      }
-      orderDirection := "asc"
-      if req.OrderDescend{
-        orderDirection = "desc"
-      }
-      vars := map[string]interface{}{
-        "first": graphql.Int(req.First),
-        "skip":  graphql.Int(req.Skip),
-        "orderBy": graphql.String(req.OrderBy),
-        "orderDirection": graphql.String(orderDirection),
-      }
-      if err := client.Query(ctx, &result, vars); err != nil {
-        return nil, err
-      }
-      // if there are result.${Ancestors} over reqUpperLimit, query again
-      if len(result.${Ancestors}) == reqUpperLimit {
-        req.Skip += reqUpperLimit
-        queue, err := List${Ancestors}(ctx, req)
-        if err != nil {
-          return nil, err
-        }
-        result.${Ancestors} = append(result.${Ancestors}, queue...)
-      }
-      return result.${Ancestors}, nil
-    }${METHOD ? swaggo + ginny : ''}`
-    )
+    var result struct {
+    ${goStruct}
+    }
+    const reqUpperLimit = 1000
+    url${Ancestors} := "${url}"
+    client := graphql.NewClient(url${Ancestors}, nil)
+    if len(reqs) == 0 {
+    reqs = append(reqs, &${AncestorsFilter}{})
+    }
+    req := reqs[0]
+    if req.First == 0 {
+    req.First = reqUpperLimit
+    }
+    if req.OrderBy == "" {
+    req.OrderBy = "id"
+    }
+    orderDirection := "asc"
+    if req.OrderDescend{
+    orderDirection = "desc"
+    }
+    vars := map[string]interface{}{
+    "first": graphql.Int(req.First),
+    "skip":  graphql.Int(req.Skip),
+    "orderBy": graphql.String(req.OrderBy),
+    "orderDirection": graphql.String(orderDirection),
+    }
+    if err := client.Query(ctx, &result, vars); err != nil {
+    return nil, err
+    }
+    // if there are result.${Ancestors} over reqUpperLimit, query again
+    if len(result.${Ancestors}) == reqUpperLimit {
+    req.Skip += reqUpperLimit
+    queue, err := List${Ancestors}(ctx, req)
+    if err != nil {
+      return nil, err
+    }
+    result.${Ancestors} = append(result.${Ancestors}, queue...)
+    }
+    return result.${Ancestors}, nil
+}${METHOD ? swaggo + ginny : ''}
+`)
 }
 
 const prefix =
-    `package ` +
-    packageName +
-    `
+    `package ${packageName}
 
 import (
 	"context"
 
 	"github.com/conbanwa/ginny"
-	"github.com/conbanwa/graphql"split
+	"github.com/conbanwa/graphql"
 )
 `
 
