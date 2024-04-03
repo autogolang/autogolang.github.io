@@ -17,7 +17,7 @@ function suffix(go, url, METHOD) {
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
         ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
-        method = METHOD.toLowerCase(),
+        method = METHOD?.toLowerCase(),
         Method = toProperCase(method)
     const goStruct =
         Ancestors +
@@ -61,8 +61,9 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
 }
     `
     return (
-        go.go.replace(Ancestors, Ancestor).replace(/type Data struct \{\n.*\n.*/, '') +
-        filter +
+        go.go.replace(Ancestors, Ancestor)
+            // .replace(/type Data struct \{\n.*\n.*/, '')
+        + filter +
         `
 func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
     var result struct {
