@@ -79,9 +79,9 @@ $(function () {
       return
     }
     var strOutput = prefix + suffix(output, $url.text(), $('#method').val())
-    if (typeof gofmt === "function") finalOutput = gofmt(strOutput);
+    finalOutput = gofmt?.(strOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
-    console.error({strOutput, finalOutput, coloredOutput });
+    z({strOutput, finalOutput, output});
     if(finalOutput.length<strOutput.length/2)coloredOutput.value=strOutput
     $('#output').html(coloredOutput.value)
     emptyMsg['output'] = 'Waiting input to generate...'
@@ -108,7 +108,7 @@ $(function () {
     lastReq = new Date().getTime()
     Request($url.text(), $schema.text().replace(/[\u0000-\u001F]/g, ' '), $('#method').val())
       .then(function (data) {
-        console.log(data)
+        z(data)
         $json.text(stringify(data))
       })
       .then(jsonConvert)
