@@ -8,7 +8,8 @@ function lowerInitial(string) {
 
 const packageName = 'gql'
 
-function workout(go, url, METHOD) {
+function workout(go, url, METHOD, FromGraphQL) {
+    const TAGS = FromGraphQL ? ' `graphql:"' : ' `json:"'
     let timeFlag = false
     const Ancestors = toProperCase(go.keys?.[0] || $('#struct').val()),
         Ancestor = singularize(Ancestors),
@@ -29,16 +30,20 @@ type ${AncestorsFilter} struct {
     graphql.Filter
     }`
 
-    function genImports(MTD) {
+    function genImports() {
+        const importGql= '"github.com/conbanwa/ginny"\ngithub.com/conbanwa/graphql'
+        const importRestful= `
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "strings"`
         return `package ${packageName}
 
 import (
-	"context"
-
-	${MTD ? '"github.com/conbanwa/ginny"\n' : ''}"github.com/conbanwa/graphql"
+    ${FromGraphQL ? importGql : importRestful}
 )
-`
-    }
+`}
 
     function genSwagGo(MTD) {
         if (!MTD) {
@@ -161,11 +166,10 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         }
         return
     }`
-    return (genImports(METHOD) +
-        go.go.replace(Ancestors, Ancestor)
+    return (genImports() + go.go.replace(Ancestors, Ancestor)
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
-        + filter + (TAGS == ' `json:"' ? listGql : listRestful)
-        + genSwagGo(METHOD) + genGinny(METHOD))
+        + filter + (FromGraphQL ? listGql + genSwagGo(METHOD) + genGinny(METHOD) : listRestful)
+    )
 }
 
 function decoder(encoded) {

@@ -14,10 +14,7 @@ function JsonToGo(json, typename, flatten, example, allOmitempty, decimal, FromG
   let accumulator = ''
   let innerTabs = 0
   let parent = ''
-  var TAGS = ' `json:"'
-  if (FromGraphQL) {
-    TAGS = ' `graphql:"'
-  }
+  const TAGS = FromGraphQL ? ' `graphql:"' : ' `json:"'
   try {
     data = JSON.parse(json.replace(/:(\s*\d*)\.0/g, ':$1.1')) // hack that forces floats to stay as floats
     scope = data
