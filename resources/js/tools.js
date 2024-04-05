@@ -83,53 +83,89 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
 }
     `
     }
-
+    const listGql = `
+    func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
+        var result struct {
+        ${goStruct}
+        }
+        const reqUpperLimit = 1000
+        url${Ancestors} := "${url}"
+        client := graphql.NewClient(url${Ancestors}, nil)
+        if len(reqs) == 0 {
+        reqs = append(reqs, &${AncestorsFilter}{})
+        }
+        req := reqs[0]
+        if req.First == 0 {
+        req.First = reqUpperLimit
+        }
+        if req.OrderBy == "" {
+        req.OrderBy = "id"
+        }
+        orderDirection := "asc"
+        if req.OrderDescend{
+        orderDirection = "desc"
+        }
+        vars := map[string]interface{}{
+        "first": graphql.Int(req.First),
+        "skip":  graphql.Int(req.Skip),
+        "orderBy": graphql.String(req.OrderBy),
+        "orderDirection": graphql.String(orderDirection),
+        }
+        if err := client.Query(ctx, &result, vars); err != nil {
+        return nil, err
+        }
+        // if there are result.${Ancestors} over reqUpperLimit, query again
+        if len(result.${Ancestors}) == reqUpperLimit {
+        req.Skip += reqUpperLimit
+        queue, err := List${Ancestors}(ctx, req)
+        if err != nil {
+          return nil, err
+        }
+        result.${Ancestors} = append(result.${Ancestors}, queue...)
+        }
+        return result.${Ancestors}, nil
+    }`
+    const listRestful = `
+    func List${Ancestors}(reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
+        const reqUpperLimit = 1000
+        urlRespBody := "https://httpbin.org/get?arg1=1.0&arg2=example"
+        if len(reqs) == 0 {
+            reqs = append(reqs, &RespBodyFilter{})
+        }
+        req, err := http.NewRequest(http.MethodGet, urlRespBody, strings.NewReader(""))
+        if err != nil {
+            return nil, err
+        }
+        if req.Header.Get("User-Agent") == "" {
+            req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36")
+        }
+        resp, err := new(http.Client).Do(req)
+        if err != nil {
+            //logs.E(*req, resp)
+            return nil, err
+        }
+        defer resp.Body.Close()
+        var respData []byte
+        respData, err = io.ReadAll(resp.Body)
+        if err != nil {
+            logs.E(resp.Body)
+            return
+        }
+        err = json.Unmarshal(respData, &bodyDataMap)
+        if err != nil {
+            logs.I("respData", string(respData))
+            return
+        }
+        if resp.StatusCode != http.StatusOK {
+            err = fmt.Errorf("%d", resp.StatusCode)
+        }
+        return
+    }`
     return (genImports(METHOD) +
         go.go.replace(Ancestors, Ancestor)
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
-        + filter +
-        `
-func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
-    var result struct {
-    ${goStruct}
-    }
-    const reqUpperLimit = 1000
-    url${Ancestors} := "${url}"
-    client := graphql.NewClient(url${Ancestors}, nil)
-    if len(reqs) == 0 {
-    reqs = append(reqs, &${AncestorsFilter}{})
-    }
-    req := reqs[0]
-    if req.First == 0 {
-    req.First = reqUpperLimit
-    }
-    if req.OrderBy == "" {
-    req.OrderBy = "id"
-    }
-    orderDirection := "asc"
-    if req.OrderDescend{
-    orderDirection = "desc"
-    }
-    vars := map[string]interface{}{
-    "first": graphql.Int(req.First),
-    "skip":  graphql.Int(req.Skip),
-    "orderBy": graphql.String(req.OrderBy),
-    "orderDirection": graphql.String(orderDirection),
-    }
-    if err := client.Query(ctx, &result, vars); err != nil {
-    return nil, err
-    }
-    // if there are result.${Ancestors} over reqUpperLimit, query again
-    if len(result.${Ancestors}) == reqUpperLimit {
-    req.Skip += reqUpperLimit
-    queue, err := List${Ancestors}(ctx, req)
-    if err != nil {
-      return nil, err
-    }
-    result.${Ancestors} = append(result.${Ancestors}, queue...)
-    }
-    return result.${Ancestors}, nil
-}` + genSwagGo(METHOD) + genGinny(METHOD))
+        + filter + (TAGS == ' `json:"' ? listGql : listRestful)
+        + genSwagGo(METHOD) + genGinny(METHOD))
 }
 
 function decoder(encoded) {
