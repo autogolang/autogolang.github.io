@@ -6,7 +6,7 @@ function lowerInitial(string) {
     return string.charAt(0).toLowerCase() + string.slice(1)
 }
 
-const packageName = 'gql'
+const packageName = FromGraphQL ? 'gql' : 'cap'
 
 function workout(go, url, METHOD, FromGraphQL) {
     const TAGS = FromGraphQL ? ' `graphql:"' : ' `json:"'
@@ -146,7 +146,6 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         }
         resp, err := new(http.Client).Do(req)
         if err != nil {
-            //logs.E(*req, resp)
             return nil, err
         }
         defer resp.Body.Close()
