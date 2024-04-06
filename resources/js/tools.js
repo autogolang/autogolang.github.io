@@ -130,14 +130,20 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         }
         return result.${Ancestors}, nil
     }` + genSwagGo(METHOD) + genGinny(METHOD)
+    let addSearch = ''
+    new URLSearchParams(getUrlSuffix(url)).forEach(function(fvalue, fkey){
+        addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
+    });
     const listRestful = `
     func List${Ancestors}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ancestor},err error) {
         const reqUpperLimit = 1000
-        urlRespBody := ""
+        urlRespBody := "${splitUrl(url)[0]}"
         if len(reqs) == 0 {
             reqs = append(reqs, &RespBodyFilter{})
         }
-        req, err := http.NewRequest(http.MethodGet, urlRespBody, strings.NewReader(""))
+	    params := url.Values{}
+        ${addSearch}
+        req, err := http.NewRequest(http.MethodGet, urlRespBody, strings.NewReader(params.Encode()))
         if err != nil {
             return nil, err
         }
@@ -208,14 +214,18 @@ function changeURLArg(arg, val) {
     return url + '?' + replaceText
 }
 
-function getUrlQuery(arg) {
-    const url = location.search; //获取url中"?"符后的字串
-    let strs;
+//获取url中"?"符后的字串
+function splitUrl(url = location.search) {
     if (url.indexOf('?') == -1) {
-        return
+        return [url, '']
     }
-    var str = url.substr(1)
-    strs = str.split('&')
+    return url.split('?')
+}
+function getUrlSuffix(url = location.search) {
+    return splitUrl(url)[1]
+}
+function getUrlQuery(arg) {
+    let strs = getUrlSuffix().split('&')
     for (var i = 0; i < strs.length; i++) {
         if (arg == strs[i].split('=')[0]) {
             return decodeURIComponent(unescape(strs[i].split('=')[1]))
