@@ -6,9 +6,8 @@ function lowerInitial(string) {
     return string.charAt(0).toLowerCase() + string.slice(1)
 }
 
-const packageName = FromGraphQL ? 'gql' : 'cap'
-
 function workout(go, url, METHOD, FromGraphQL) {
+    const packageName = FromGraphQL ? 'gql' : 'cap'
     const TAGS = FromGraphQL ? ' `graphql:"' : ' `json:"'
     let timeFlag = false
     const Ancestors = toProperCase(go.keys?.[0] || $('#struct').val()),
