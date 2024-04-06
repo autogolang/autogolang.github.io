@@ -1,0 +1,2 @@
+func zx() :promise<void>
+{}
