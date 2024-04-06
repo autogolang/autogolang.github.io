@@ -27,7 +27,7 @@ function workout(go, url, METHOD, FromGraphQL) {
             '(first:$first,skip:$skip,orderBy:$orderBy,orderDirection:$orderDirection,where:{})"`',
         filter = `
 type ${AncestorsFilter} struct {
-    graphql.Filter
+    ${FromGraphQL ? 'graphql.Filter' : ''}
     }`
 
     function genImports() {
@@ -201,25 +201,24 @@ function changeURLArg(arg, val) {
         var tmp = '/(' + arg + '=)([^&]*)/gi'
         tmp = url.replace(eval(tmp), replaceText)
         return tmp
-    } else {
-        if (url.match('[?]')) {
-            return url + '&' + replaceText
-        } else {
-            return url + '?' + replaceText
-        }
     }
+    if (url.match('[?]')) {
+        return url + '&' + replaceText
+    }
+    return url + '?' + replaceText
 }
 
 function getUrlQuery(arg) {
     const url = location.search; //获取url中"?"符后的字串
     let strs;
-    if (url.indexOf('?') != -1) {
-        var str = url.substr(1)
-        strs = str.split('&')
-        for (var i = 0; i < strs.length; i++) {
-            if (arg == strs[i].split('=')[0]) {
-                return decodeURIComponent(unescape(strs[i].split('=')[1]))
-            }
+    if (url.indexOf('?') == -1) {
+        return
+    }
+    var str = url.substr(1)
+    strs = str.split('&')
+    for (var i = 0; i < strs.length; i++) {
+        if (arg == strs[i].split('=')[0]) {
+            return decodeURIComponent(unescape(strs[i].split('=')[1]))
         }
     }
 }
@@ -235,7 +234,8 @@ function lintName(name) {
 function singularize(name) {
     if (name.endsWith('ies')) {
         return name.slice(0, -3) + 'y'
-    } else if (name.endsWith('s')) {
+    }
+    if (name.endsWith('s')) {
         return name.slice(0, -1)
     }
     return name
