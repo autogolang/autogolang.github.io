@@ -129,11 +129,11 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         result.${Ancestors} = append(result.${Ancestors}, queue...)
         }
         return result.${Ancestors}, nil
-    }`
+    }` + genSwagGo(METHOD) + genGinny(METHOD)
     const listRestful = `
-    func List${Ancestors}(reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
+    func List${Ancestors}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ancestor},err error) {
         const reqUpperLimit = 1000
-        urlRespBody := "https://httpbin.org/get?arg1=1.0&arg2=example"
+        urlRespBody := ""
         if len(reqs) == 0 {
             reqs = append(reqs, &RespBodyFilter{})
         }
@@ -168,14 +168,14 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
     }`
     return (genImports() + go.go.replace(Ancestors, Ancestor)
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
-        + filter + (FromGraphQL ? listGql + genSwagGo(METHOD) + genGinny(METHOD) : listRestful)
+        + filter + (FromGraphQL ? listGql : listRestful)
     )
 }
 
 function decoder(encoded) {
     const splitter = '/graphql'
-    const split = encoded.split(splitter);
-    const query = decodeURIComponent(split[1]).replace('?query=', ' ');
+    const split = encoded.split(splitter)
+    const query = decodeURIComponent(split[1]).replace('?query=', ' ')
     return [split[0], query]
 }
 
