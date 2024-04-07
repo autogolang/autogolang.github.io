@@ -31,15 +31,14 @@ function JsonToGo(json, typename, flatten, example = undefined, allOmitempty = f
   if (!FromGraphQL)
     return {
       go: flatten ? (go += accumulator) : go,
-      resp,
+      keys: [resp],
     }
 
-  let key0 = Object.keys(scope)
-  console.log(key0,scope[key0])
+  let key0 = Object.keys(scope)?.[0]
+  console.log(key0, resp, scope[key0])
   return {
     go: accumulator,
     keys: scope[key0] ? formatScopeKeys(Object.keys(scope[key0])) : formatScopeKeys(key0),
-    resp,
   }
 
   function parseScope(scope, depth = 0) {
