@@ -31,7 +31,7 @@ function JsonToGo(json, typename, flatten, example = undefined, allOmitempty = f
   if (!FromGraphQL)
     return {
       go: flatten ? (go += accumulator) : go,
-      keys: [resp],
+      keys: [resp.replace('[]','')],
     }
 
   let key0 = Object.keys(scope)
