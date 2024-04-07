@@ -16,8 +16,9 @@ function workout(go, url, METHOD, FromGraphQL) {
         AncestorsFilter = Ancestors + 'Filter',
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
-        ancestorLispCase = ancestors_under_score.replace(/_/g, '-')
-    const Rets = go.keys?.[0] || Ancestors,
+        ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
+        Action = go.keys?.[0] ? 'List' : 'Get',
+        Rets = go.keys?.[0] || Ancestors,
         Ret = pluralize.singular(Rets),
         goStruct =
             Ancestors +
@@ -84,13 +85,13 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
       OrderBy:      c.Query("order_by"),
       OrderDescend: c.Query("order_descend") == "true",
     }
-    c.Render(List${Ancestors}(c.Request.Context(), &${AncestorsFilter}{Filter: filter}))
+    c.Render(${Action}${Ancestors}(c.Request.Context(), &${AncestorsFilter}{Filter: filter}))
     return ""
 }
     `
     }
-    const listGql = `
-    func List${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
+    const getGql = `
+    func ${Action}${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
         var result struct {
         ${goStruct}
         }
@@ -123,7 +124,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         // if there are result.${Ancestors} over reqUpperLimit, query again
         if len(result.${Ancestors}) == reqUpperLimit {
         req.Skip += reqUpperLimit
-        queue, err := List${Ancestors}(ctx, req)
+        queue, err := ${Action}${Ancestors}(ctx, req)
         if err != nil {
           return nil, err
         }
@@ -135,8 +136,8 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
     new URLSearchParams(getUrlSuffix(url)).forEach(function(fvalue, fkey){
         addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
     });
-    const listRestful = `
-    func List${Rets}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ret},err error) {
+    const getRestful = `
+    func ${Action}${Rets}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ret},err error) {
         const reqUpperLimit = 1000
         urlRespBody := "${splitUrl(url)[0]}"
         if len(reqs) == 0 {
@@ -174,7 +175,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
     }`
     return (genImports() + go.go.replace(Ancestors, Ancestor).replace(Rets, Ret)//TODO plural json2go 
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
-        + filter + (FromGraphQL ? listGql : listRestful)
+        + filter + (FromGraphQL ? getGql : getRestful)
     )
 }
 
