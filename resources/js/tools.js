@@ -213,13 +213,14 @@ function changeURLArg(arg, val) {
     return url + '?' + replaceText
 }
 
-//获取url中"?"符后的字串
 function splitUrl(url = location.search) {
     if (url.indexOf('?') == -1) {
         return [url, '']
     }
     return url.split('?')
 }
+
+//获取url中"?"符后的字串
 function getUrlSuffix(url = location.search) {
     return splitUrl(url)[1]
 }

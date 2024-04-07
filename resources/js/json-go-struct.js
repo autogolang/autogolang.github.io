@@ -4,7 +4,8 @@
 	https://github.com/mholt/json-go-struct
 	A simple utility to translate JSON into a Go type definition.
 */
-function JsonToGo(json, typename, flatten, example, allOmitempty, decimal, FromGraphQL) {
+function JsonToGo(json, typename, flatten, example = undefined, allOmitempty = false, decimal = false, FromGraphQL = false) {
+  let resp = ''
   let data
   let scope
   let go = ''
@@ -30,12 +31,15 @@ function JsonToGo(json, typename, flatten, example, allOmitempty, decimal, FromG
   if (!FromGraphQL)
     return {
       go: flatten ? (go += accumulator) : go,
+      resp,
     }
 
   let key0 = Object.keys(scope)
+  console.log(key0,scope[key0])
   return {
     go: accumulator,
     keys: scope[key0] ? formatScopeKeys(Object.keys(scope[key0])) : formatScopeKeys(key0),
+    resp,
   }
 
   function parseScope(scope, depth = 0) {
@@ -55,6 +59,7 @@ function JsonToGo(json, typename, flatten, example, allOmitempty, decimal, FromG
         if (flatten && depth >= 2) appender(slice)
         else append(slice)
         if (sliceType == 'struct') {
+          if (!resp) resp = slice
           const allFields = {}
           // for each field counts how many times appears
           for (let i = 0; i < scopeLength; i++) {
