@@ -17,7 +17,7 @@ function workout(go, url, METHOD, FromGraphQL) {
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
         ancestorLispCase = ancestors_under_score.replace(/_/g, '-')
-    const Rets = go.keys?.[0] ?? Ancestors,
+    const Rets = go.keys?.[0] || Ancestors,
         Ret = pluralize.singular(Rets),
         goStruct =
             Ancestors +
@@ -172,7 +172,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         }
         return
     }`
-    return (genImports() + go.go.replace(Ancestors, Ancestor)//TODO plural json2go 
+    return (genImports() + go.go.replace(Ancestors, Ancestor).replace(Rets, Ret)//TODO plural json2go 
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
         + filter + (FromGraphQL ? listGql : listRestful)
     )

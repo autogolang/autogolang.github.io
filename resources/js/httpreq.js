@@ -88,7 +88,7 @@ $(function () {
     var strOutput = workout(output, $url.text(), $('#method').val())
     finalOutput = gofmt?.(strOutput);
     var coloredOutput = hljs.highlight('go', finalOutput)
-    $('#output').html(coloredOutput.value)
+    $('#output').html(coloredOutput.value + (finalOutput.indexOf('\n')==-1 ? strOutput : ''))
     z({strOutput, finalOutput, output});
     emptyMsg['output'] = 'Waiting input to generate...'
     changeURLArg('url', $url.text())
