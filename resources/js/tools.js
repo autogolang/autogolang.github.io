@@ -136,7 +136,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
     });
     const listRestful = `
-    func List${Rets}(reqs ...*${RetsFilter}) (bodyDataMap []${Ret},err error) {
+    func List${Rets}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ret},err error) {
         const reqUpperLimit = 1000
         urlRespBody := "${splitUrl(url)[0]}"
         if len(reqs) == 0 {
