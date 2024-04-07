@@ -16,8 +16,8 @@ function workout(go, url, METHOD, FromGraphQL) {
         AncestorsFilter = Ancestors + 'Filter',
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
-        ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
-        Rets = go.keys?.[0] ?? Ancestors,
+        ancestorLispCase = ancestors_under_score.replace(/_/g, '-')
+    const Rets = go.keys?.[0] ?? Ancestors,
         Ret = pluralize.singular(Rets),
         goStruct =
             Ancestors +
