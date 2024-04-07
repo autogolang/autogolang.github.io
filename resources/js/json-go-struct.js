@@ -34,11 +34,11 @@ function JsonToGo(json, typename, flatten, example = undefined, allOmitempty = f
       keys: [resp],
     }
 
-  let key0 = Object.keys(scope)?.[0]
-  console.log(key0, resp, scope[key0])
+  let key0 = Object.keys(scope)
+  console.log(key0, resp, formatScopeKeys(key0))
   return {
     go: accumulator,
-    keys: scope[key0] ? formatScopeKeys(Object.keys(scope[key0])) : formatScopeKeys(key0),
+    keys: formatScopeKeys(key0),
   }
 
   function parseScope(scope, depth = 0) {
