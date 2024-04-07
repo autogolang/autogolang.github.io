@@ -10,13 +10,15 @@ function workout(go, url, METHOD, FromGraphQL) {
     const packageName = FromGraphQL ? 'gql' : 'cap'
     const TAGS = FromGraphQL ? ' `graphql:"' : ' `json:"'
     let timeFlag = false
-    const Ancestors = toProperCase(go.keys?.[0] || $('#struct').val()),
-        Ancestor = singularize(Ancestors),
+    const Ancestors = toProperCase($('#struct').val()),
+        Ancestor = pluralize.singular(Ancestors),
         ancestors = lowerInitial(Ancestors),
         AncestorsFilter = Ancestors + 'Filter',
         ancestors_under_score = camelCaseToUnderscore(Ancestors),
         AncestorsTitleCase = ancestors_under_score.replace(/_/g, ' '),
         ancestorLispCase = ancestors_under_score.replace(/_/g, '-'),
+        Rets = go.keys?.[0] ?? Ancestors,
+        Ret = pluralize.singular(Rets),
         goStruct =
             Ancestors +
             ' []' +
@@ -134,7 +136,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
     });
     const listRestful = `
-    func List${Ancestors}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ancestor},err error) {
+    func List${Rets}(reqs ...*${RetsFilter}) (bodyDataMap []${Ret},err error) {
         const reqUpperLimit = 1000
         urlRespBody := "${splitUrl(url)[0]}"
         if len(reqs) == 0 {
@@ -170,7 +172,7 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         }
         return
     }`
-    return (genImports() + go.go.replace(Ancestors, Ancestor)
+    return (genImports() + go.go.replace(Ancestors, Ancestor)//TODO plural json2go 
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
         + filter + (FromGraphQL ? listGql : listRestful)
     )
@@ -239,14 +241,4 @@ function lintName(name) {
     name = name.replace(/Id$/g, 'ID')
     //implement lint
     return name[0].toUpperCase() + name.slice(1)
-}
-
-function singularize(name) {
-    if (name.endsWith('ies')) {
-        return name.slice(0, -3) + 'y'
-    }
-    if (name.endsWith('s')) {
-        return name.slice(0, -1)
-    }
-    return name
 }
