@@ -137,7 +137,11 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
     });
     const getRestful = `
-    func ${Action}${Rets}(reqs ...*${AncestorsFilter}) (bodyDataMap []${Ret},err error) {
+    func (r ${Ancestors}) Stem() []${Ret} {
+        return r.${Rets}
+    }
+
+    func ${Action}${Rets}(reqs ...*${AncestorsFilter}) (ret []${Ret},err error) {
         const reqUpperLimit = 1000
         urlRespBody := "${splitUrl(url)[0]}"
         if len(reqs) == 0 {
@@ -156,21 +160,19 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
         if err != nil {
             return nil, err
         }
+        if resp.StatusCode != http.StatusOK {
+            err = fmt.Errorf("%d", resp.StatusCode)
+            return
+        }
         defer resp.Body.Close()
         var respData []byte
         respData, err = io.ReadAll(resp.Body)
         if err != nil {
-            logs.E(resp.Body)
             return
         }
+        var bodyDataMap ${Ancestors}
         err = json.Unmarshal(respData, &bodyDataMap)
-        if err != nil {
-            logs.I("respData", string(respData))
-            return
-        }
-        if resp.StatusCode != http.StatusOK {
-            err = fmt.Errorf("%d", resp.StatusCode)
-        }
+        ret = bodyDataMap.Stem()
         return
     }`
     return (genImports() + go.go.replace(Ancestors, Ancestor).replace(Rets, Ret)//TODO plural json2go 
