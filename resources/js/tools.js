@@ -91,91 +91,87 @@ func ${Method}${Ancestors}(c *ginny.Context) string {
     `
     }
     const getGql = `
-    func ${Action}${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
-        var result struct {
-        ${goStruct}
-        }
-        const reqUpperLimit = 1000
-        url${Ancestors} := "${url}"
-        client := graphql.NewClient(url${Ancestors}, nil)
-        if len(reqs) == 0 {
+func ${Action}${Ancestors}(ctx context.Context, reqs ...*${AncestorsFilter}) ([]${Ancestor}, error) {
+    var result struct {
+    ${goStruct}
+    }
+    const reqUpperLimit = 1000
+    url${Ancestors} := "${url}"
+    client := graphql.NewClient(url${Ancestors}, nil)
+    if len(reqs) == 0 {
         reqs = append(reqs, &${AncestorsFilter}{})
-        }
-        req := reqs[0]
-        if req.First == 0 {
+    }
+    req := reqs[0]
+    if req.First == 0 {
         req.First = reqUpperLimit
-        }
-        if req.OrderBy == "" {
+    }
+    if req.OrderBy == "" {
         req.OrderBy = "id"
-        }
-        orderDirection := "asc"
-        if req.OrderDescend{
+    }
+    orderDirection := "asc"
+    if req.OrderDescend{
         orderDirection = "desc"
-        }
-        vars := map[string]interface{}{
+    }
+    vars := map[string]interface{}{
         "first": graphql.Int(req.First),
         "skip":  graphql.Int(req.Skip),
         "orderBy": graphql.String(req.OrderBy),
         "orderDirection": graphql.String(orderDirection),
-        }
-        if err := client.Query(ctx, &result, vars); err != nil {
+    }
+    if err := client.Query(ctx, &result, vars); err != nil {
         return nil, err
-        }
-        // if there are result.${Ancestors} over reqUpperLimit, query again
-        if len(result.${Ancestors}) == reqUpperLimit {
+    }
+    // if there are result.${Ancestors} over reqUpperLimit, query again
+    if len(result.${Ancestors}) == reqUpperLimit {
         req.Skip += reqUpperLimit
         queue, err := ${Action}${Ancestors}(ctx, req)
         if err != nil {
-          return nil, err
+            return nil, err
         }
         result.${Ancestors} = append(result.${Ancestors}, queue...)
-        }
-        return result.${Ancestors}, nil
-    }` + genSwagGo(METHOD) + genGinny(METHOD)
+    }
+    return result.${Ancestors}, nil
+}` + genSwagGo(METHOD) + genGinny(METHOD)
     let addSearch = ''
     new URLSearchParams(getUrlSuffix(url)).forEach(function(fvalue, fkey){
         addSearch += 'params.Add("' + fkey + '", `' + fvalue + '`)\n' 
     });
     const getRestful = `
-    func (r ${Ancestors}) Stem() []${Ret} {
-        return r.${Rets}
+func ${Action}${Rets}(reqs ...*${AncestorsFilter}) (ret []${Ret},err error) {
+    const reqUpperLimit = 1000
+    urlRespBody := "${splitUrl(url)[0]}"
+    if len(reqs) == 0 {
+        reqs = append(reqs, &RespBodyFilter{})
     }
-
-    func ${Action}${Rets}(reqs ...*${AncestorsFilter}) (ret []${Ret},err error) {
-        const reqUpperLimit = 1000
-        urlRespBody := "${splitUrl(url)[0]}"
-        if len(reqs) == 0 {
-            reqs = append(reqs, &RespBodyFilter{})
-        }
-	    params := url.Values{}
-        ${addSearch}
-        req, err := http.NewRequest(http.MethodGet, urlRespBody, strings.NewReader(params.Encode()))
-        if err != nil {
-            return nil, err
-        }
-        if req.Header.Get("User-Agent") == "" {
-            req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36")
-        }
-        resp, err := new(http.Client).Do(req)
-        if err != nil {
-            return nil, err
-        }
-        if resp.StatusCode != http.StatusOK {
-            err = fmt.Errorf("%d", resp.StatusCode)
-            return
-        }
-        defer resp.Body.Close()
-        var respData []byte
-        respData, err = io.ReadAll(resp.Body)
-        if err != nil {
-            return
-        }
-        var bodyDataMap ${Ancestors}
-        err = json.Unmarshal(respData, &bodyDataMap)
-        ret = bodyDataMap.Stem()
+    params := url.Values{}
+    ${addSearch}
+    req, err := http.NewRequest(http.MethodGet, urlRespBody, strings.NewReader(params.Encode()))
+    if err != nil {
+        return nil, err
+    }
+    if req.Header.Get("User-Agent") == "" {
+        req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36")
+    }
+    resp, err := new(http.Client).Do(req)
+    if err != nil {
+        return nil, err
+    }
+    if resp.StatusCode != http.StatusOK {
+        err = fmt.Errorf("%d", resp.StatusCode)
         return
-    }`
-    return (genImports() + go.go.replace(Ancestors, Ancestor).replace(Rets, Ret)//TODO plural json2go 
+    }
+    defer resp.Body.Close()
+    var respData []byte
+    respData, err = io.ReadAll(resp.Body)
+    if err != nil {
+        return
+    }
+    var bodyDataMap ${Ancestors}
+    err = json.Unmarshal(respData, &bodyDataMap)
+    ret = bodyDataMap.${Rets}
+    return
+}`
+    return (genImports() + go.go.replace(Ancestors, Ancestor).replaceAll(Rets, Ret)//TODO plural json2go 
         // .replace(/type Data struct \{\n.*\n.*\n\}/, '')
         + filter + (FromGraphQL ? getGql : getRestful)
     )
